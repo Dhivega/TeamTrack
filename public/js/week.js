@@ -108,7 +108,7 @@ function getWeekNumber(date) {
 let users = [];
 async function fetchUsers() {
   try {
-    const response = await fetch("/users-data");
+    const response = await fetch("/report-data");
     const result = await response.json();
     console.log("res:" + result);
     if (result.success) {
@@ -176,7 +176,7 @@ let projects = [];
 
 async function fetchProjects() {
   try {
-    const response = await fetch("/projects-data");
+    const response = await fetch("/proj-data");
     const result = await response.json();
     if (result.success) {
       projects = result.data;

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Login</title>
+
+    <link
+      href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"
+      rel="stylesheet"
+      id="bootstrap-css"
+    />
+    <link rel="icon" href="img/icon.jpg">
+
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="css/login.css">
+    <!------ Include the above in your HEAD tag ---------->
+</head>
+    <body>
+      <div class="container register">
+        <div class="row">
+          <div class="col-md-3 register-left">
+            <img src="img/fives-logo-white3.png" alt=""  style="width: 90px; height: 80px; margin-top: 10px;"/>
+            <!-- <h3 style="margin-top: 90px">Welcome</h3> -->
+            <p><h3>Welcome to fives!</h3>
+            <h5>Industry can do it</h5></p>
+       
+            <a href="/register"><input type="submit" name="" value="Register" / style="margin-top: 30px;"><br /></a>
+          </div>
+          <div class="col-md-9 register-right" style="padding:-100px;">
+         
+            <div class="tab-content" id="myTabContent" style="padding: 0px;">
+              <div
+                class="tab-pane fade show active"
+                id="home"
+                role="tabpanel"
+                aria-labelledby="home-tab"
+              >
+                <h3 class="register-heading" style="margin-left: -80px;">LOGIN</h3>
+                <form id="logIn" method="POST" action="/login">
+              <div class="row register-form">
+                   <div class="col-md-6">
+               
+                      <div class="form-group">
+                          <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            class="form-control"
+                            placeholder="Your Email *"
+                            value=""
+                            style="margin-left: 30px;"
+                            onkeyup="login1()"
+                            required
+                          />
+                      </div>
+                      <div class="form-group">
+                        <input
+                          type="password"
+                          id="password"
+                          name="password"
+                          class="form-control"
+                          placeholder="Password *"
+                          value=""
+                          style="margin-left: 30px;"
+                           onkeyup= "login2()"
+                           required
+                           />
+                          
+                      </div>
+                   
+                    <a href="/forgot" style="color: black;margin-right:60px;">Forgot password ?</a>
+                     
+                    <input type="submit" class="btnRegister" id="btn" value="Login" style="margin-top: 50px;margin-right: 50px; float: right" disabled/> 
+                
+
+                    </div> 
+                    
+                
+                  </div>
+             </form>
+                
+                    
+                  
+                   
+                   
+                </div>
+              </div>
+      </div>
+       
+  
+    
+    </body>
+    <script>
+   
+    
+    </script> 
+       <script src="js/login.js"></script>
+    
+    
+  </head>
+</html>
