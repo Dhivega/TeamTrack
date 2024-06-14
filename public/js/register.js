@@ -37,6 +37,45 @@ document
     }
   });
 
+document
+  .getElementById("firstname")
+  .addEventListener("keydown", function (event) {
+    if (event.key === "Tab") {
+      event.preventDefault();
+      document.getElementById("lastname").focus();
+    }
+  });
+document
+  .getElementById("lastname")
+  .addEventListener("keydown", function (event) {
+    if (event.key === "Tab") {
+      event.preventDefault();
+      document.getElementById("email").focus();
+    }
+  });
+document.getElementById("email").addEventListener("keydown", function (event) {
+  if (event.key === "Tab") {
+    event.preventDefault();
+    document.getElementById("Confirm E-mail").focus();
+  }
+});
+document
+  .getElementById("Confirm E-mail")
+  .addEventListener("keydown", function (event) {
+    if (event.key === "Tab") {
+      event.preventDefault();
+      document.getElementById("password").focus();
+    }
+  });
+document
+  .getElementById("password")
+  .addEventListener("keydown", function (event) {
+    if (event.key === "Tab") {
+      event.preventDefault();
+      document.getElementById("Confirm Password").focus();
+    }
+  });
+
 //  document.getElementById('btn').style.display='none';
 var disableBtn = true;
 var enablebtn = false;
