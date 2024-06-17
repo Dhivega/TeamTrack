@@ -89,27 +89,6 @@ exports.log = async (req, res) => {
 };
 
 // Fetch all users
-// exports.getAllUsers = (req, res) => {
-//   const query =
-//     "SELECT user_id, firstname AS name, email AS mail, Designation, Manager, status_id AS status,role_id as role_id FROM employees";
-//   db.query(query, (err, results) => {
-//     if (err) {
-//       console.error("Error fetching user data:", err);
-//       return res
-//         .status(500)
-//         .json({ success: false, message: "Failed to fetch user data" });
-//     }
-//     results.forEach((element) => {
-//       element.statusName = element.status === 1 ? "Active" : "In Active";
-//     });
-//     results.forEach((element) => {
-//       element.roleName = element.role_id === 1 || "null" ? "user" : "admin";
-//     });
-//     res.json({ success: true, data: results });
-//   });
-// };
-
-// Fetch all users
 exports.getAllUsers = (req, res) => {
   const query =
     "SELECT user_id, firstname AS name, email AS mail, Designation, Manager, status_id AS status, role_id FROM employees";
@@ -152,27 +131,6 @@ exports.addUser = (req, res) => {
     }
   );
 };
-
-// // Update a user
-// exports.updateUser = (req, res) => {
-//   const { user_id, name, mail, Designation, Manager, status, role } = req.body;
-//   console.log(req.body);
-//   const query =
-//     "UPDATE employees SET firstname = ?, email = ?, Designation = ?, Manager = ? WHERE user_id = ?";
-//   db.query(
-//     query,
-//     [name, mail, Designation, Manager, user_id, status, role],
-//     (err, result) => {
-//       if (err) {
-//         console.error("Error updating user data:", err);
-//         return res
-//           .status(500)
-//           .json({ success: false, message: "Error updating user data" });
-//       }
-//       res.json({ success: true, message: "User updated successfully!" });
-//     }
-//   );
-// };
 
 // Update a user
 exports.updateUser = (req, res) => {
@@ -430,7 +388,7 @@ exports.getUsers = (req, res) => {
 // fetch dynamically added rows from project table which are added by admin in admin (projects) page
 exports.getProjects = (req, res) => {
   const query =
-    "SELECT code as code,Description as description,Solution as solution,Activity_type as activity_Type,subsidiary as subsidiary,Complementary_desc as Complementary_desc FROM project LIMIT 3, 1000;";
+    "SELECT code as code,Description as description,Solution as solution,Activity_type as activity_Type,subsidiary as subsidiary,Complementary_desc as Complementary_desc FROM project ";
 
   db.query(query, (err, results) => {
     if (err) {
@@ -482,7 +440,7 @@ exports.getmail = (req, res) => {
 exports.getreport = (req, res) => {
   // console.log("res:" + res);
   const query =
-    "SELECT code as code,Description as description,Solution as solution,Activity_type as activity_Type,subsidiary as subsidiary,Complementary_desc as Complementary_desc  FROM projects WHERE code IN ('DEV.H.01', 'DEV.I.01', 'DEV.I.02')";
+    "SELECT code as code,Description as description,Solution as solution,Activity_type as activity_Type,subsidiary as subsidiary,Complementary_desc as Complementary_desc  FROM project WHERE code IN ('DEV.H.01', 'DEV.I.01', 'DEV.I.02')";
 
   db.query(query, (err, results) => {
     if (err) {
@@ -495,11 +453,9 @@ exports.getreport = (req, res) => {
   });
 };
 
-// fetch dynamically added rows from project table which are added by admin in admin (projects) page
 exports.getProj = (req, res) => {
-  // console.log("res:" + res);
   const query =
-    "SELECT code as code,Description as description,Solution as solution,Activity_type as activity_Type,subsidiary as subsidiary,Complementary_desc as Complementary_desc FROM projects WHERE code NOT IN ('DEV.H.01', 'DEV.I.01', 'DEV.I.02')";
+    "SELECT code as code,Description as description,Solution as solution,Activity_type as activity_Type,subsidiary as subsidiary,Complementary_desc as Complementary_desc FROM project WHERE code NOT IN ('DEV.H.01', 'DEV.I.01', 'DEV.I.02')";
 
   db.query(query, (err, results) => {
     if (err) {
@@ -533,16 +489,17 @@ exports.saveReport = (req, res) => {
   }
 
   const query = `
-    INSERT INTO weekly_report (code, description, solution, activity_Type, subsidiary, Complementary_desc, year, month, weekno1, weekno2, weekno3, weekno4, weekno5, data1, data2, data3, data4, data5)
+    INSERT INTO weekly_report (user_id, code, description, solution, activity_Type, subsidiary, Complementary_desc, year, month, weekno1, weekno2, weekno3, weekno4, weekno5, data1, data2, data3, data4, data5)
     VALUES ?`;
 
   const values = reportData.map((row) => [
+    row.user_id || null,
     row.code || null,
     row.description || null,
     row.solution || null,
     row.activity_Type || null,
     row.subsidiary || null,
-    row.complementary_Description || null,
+    row.Complementary_desc || null,
     year,
     month,
     weekno1,
@@ -570,18 +527,31 @@ exports.saveReport = (req, res) => {
   });
 };
 
-// exports.fetchAllWeeklyReports = (req, res) => {
-//   const query = `
-//     SELECT * FROM weekly_report
-//   `;
+exports.fetchAllWeeklyReports = (req, res) => {
+  const { user_id, year, month } = req.query;
+  console.log("req.query" + req.query);
 
-//   db.query(query, (error, results) => {
-//     if (error) {
-//       console.error("Error fetching data:", error);
-//       return res
-//         .status(500)
-//         .json({ success: false, message: "Failed to fetch report data" });
-//     }
-//     res.json({ success: true, data: results });
-//   });
-// };
+  if (!user_id || !year || !month) {
+    return res
+      .status(400)
+      .send({ error: "user_id, year, and month are required" });
+  }
+
+  const query = `
+    SELECT * 
+    FROM weekly_report 
+    WHERE user_id = '184'? 
+      AND year = '2024'? 
+      AND month = '6'?;
+  `;
+
+  db.query(query, (error, results) => {
+    if (error) {
+      console.error("Error fetching data:", error);
+      return res
+        .status(500)
+        .json({ success: false, message: "Failed to fetch report data" });
+    }
+    res.json({ success: true, data: results });
+  });
+};

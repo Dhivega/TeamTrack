@@ -141,7 +141,13 @@
                         </div>
                         <div class="form-group">
                             <label for="editUserStatus">Status</label>
-                            <input type="text" class="form-control" id="editUserStatus" name="status">
+                           
+                            <select class="form-control" id="editUserStatus" name="status">
+                          
+                                <option value="2">In Active</option>
+                                <option value="1">Active</option>
+                                
+                            </select>
                         </div>
                         <div class="form-group">
                             <label for="editUserrole">role</label>
@@ -381,7 +387,9 @@
             document.querySelector('#editUserEmail').value = user.mail;
             document.querySelector('#editUserDesignation').value = user.Designation;
             document.querySelector('#editUserManager').value = user.Manager;
+            // console.log("user.Manager:"+user.Manager);
             document.querySelector('#editUserStatus').value = user.status;
+            console.log("user.status:"+user.status);
             document.querySelector('#editUserrole').value = user.role_id;
 
             $('#editModal').modal('show');
@@ -407,9 +415,11 @@
                     mail: document.querySelector('#editUserEmail').value,
                     Designation: document.querySelector('#editUserDesignation').value,
                     Manager: document.querySelector('#editUserManager').value,
+                    
                     status: document.querySelector('#editUserStatus').value,
                     role: document.querySelector('#editUserrole').value
                 };
+                console.log("formdata:"+formData);
         
                 const isExistingUser = formData.user_id.trim() !== ''; 
                 const url = isExistingUser ? '/users' : '/save'; 

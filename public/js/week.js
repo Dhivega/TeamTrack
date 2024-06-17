@@ -1,10 +1,13 @@
 document.addEventListener("DOMContentLoaded", () => {
+  console.log("UserID", window.localStorage.getItem("userID"));
+  //user fetch
+  //projects fetch
+  //week report fetch -> userid, current month and year
   setCurrentMonthAndYear();
   fetchProjects();
+  fetchUsers();
   loadReport();
   generateTable();
-  fetchUsers();
-  saveReport();
   document
     .getElementById("add_project")
     .addEventListener("click", addProjectRow);
@@ -15,44 +18,36 @@ document.getElementById("year").addEventListener("change", generateTable);
 
 function generateTable() {
   const month = parseInt(document.getElementById("month").value);
-  const tableBody = document.getElementById("tab_logic").querySelector("tbody");
-  tableBody.innerHTML = ""; // Clear existing rows
-  renderUsers();
-  console.log("month:" + month);
+  const m = month.textContent;
+  console.log("Month:" + month);
   const year = parseInt(document.getElementById("year").value);
+  const tableBody = document.getElementById("tab_logic").querySelector("tbody");
+  tableBody.innerHTML = "";
+  renderUsers();
 
   let firstDay = new Date(year, month - 1, 1);
   let firstMonday = new Date(firstDay);
   firstMonday.setDate(
     firstMonday.getDate() + ((1 + 7 - firstDay.getDay()) % 7)
-  ); // Find the first Monday of the month
+  );
 
-  let currentMonday = new Date(firstMonday); // Start from the first Monday
+  let currentMonday = new Date(firstMonday);
   let currentFriday = new Date(currentMonday);
-  currentFriday.setDate(currentFriday.getDate() + 4); // Calculate Friday of the current week
+  currentFriday.setDate(currentFriday.getDate() + 4);
 
   for (let currentWeek = 1; currentWeek <= 5; currentWeek++) {
     let weekFromCell = document.getElementById("week" + currentWeek + "From");
     let weekToCell = document.getElementById("week" + currentWeek + "To");
     let weekCell = document.getElementById("weekcell" + currentWeek);
-    let fromText = "";
-    let toText = "";
 
-    // Set the "From" and "To" sub-columns with the starting and ending dates of the week
-    fromText =
-      currentMonday.getDate() + " " + monthName(currentMonday.getMonth());
-    toText =
-      currentFriday.getDate() + " " + monthName(currentFriday.getMonth());
-
-    // Update the table cells
-    weekFromCell.textContent = fromText;
-    weekToCell.textContent = toText;
+    weekFromCell.textContent = `${currentMonday.getDate()} ${monthName(
+      currentMonday.getMonth()
+    )}`;
+    weekToCell.textContent = `${currentFriday.getDate()} ${monthName(
+      currentFriday.getMonth()
+    )}`;
     weekCell.textContent = getWeekNumber(currentMonday);
-    var weekno = weekCell.textContent;
-    // var cell = getWeekNumber(currentMonday);
-    console.log("weekno:" + weekno);
 
-    // Move to the next week (Monday to Friday)
     currentMonday.setDate(currentMonday.getDate() + 7);
     currentFriday.setDate(currentFriday.getDate() + 7);
   }
@@ -60,20 +55,8 @@ function generateTable() {
 
 function setCurrentMonthAndYear() {
   const currentDate = new Date();
-  const currentMonth = currentDate.getMonth() + 1;
-  console.log("curr:" + currentMonth);
-  // JavaScript months are zero-based
-  const currentYear = currentDate.getFullYear();
-
-  document.getElementById("month").value = currentMonth;
-  document.getElementById("year").value = currentYear;
-}
-
-function setCurrentMonth() {
-  const currentDate = new Date();
-  const currentMonth = currentDate.getMonth() + 1;
-  console.log("currentMonth:" + currentMonth); // JavaScript months are zero-based
-  document.getElementById("month").value = currentMonth;
+  document.getElementById("month").value = currentDate.getMonth() + 1;
+  document.getElementById("year").value = currentDate.getFullYear();
 }
 
 function monthName(monthIndex) {
@@ -104,16 +87,13 @@ function getWeekNumber(date) {
   return Math.floor((diff + start.getDay() + 1) / 7) + 1;
 }
 
-// get data from project table first 3 rows
 let users = [];
 async function fetchUsers() {
   try {
     const response = await fetch("/report-data");
     const result = await response.json();
-    console.log("res:" + result);
     if (result.success) {
       users = result.data;
-      console.log(users);
       renderUsers();
     } else {
       console.error("Failed to fetch user data:", result.message);
@@ -126,54 +106,26 @@ async function fetchUsers() {
 function renderUsers() {
   const tableBody = document.getElementById("tab_logic").querySelector("tbody");
   tableBody.innerHTML = ""; // Clear existing rows
-  users.forEach((user, index) => {
-    console.log("index:" + index);
+  users.forEach((user) => {
     const row = document.createElement("tr");
-    // row.id = `addr${index}`;
     row.innerHTML = `
-         
-          <td id="code">${user.code}</td>
-          <td id="description">${user.description}</td>
-          <td>${user.solution}</td>
-          <td>${user.activity_Type}</td>
-          <td>${user.subsidiary}</td>
-          <td>${user.Complementary_desc}</td>
-          <td><input type='number' name='weekcell' placeholder='' id="data1" class='form-control' value=''/></td>
-          <td><input type='number' name='weekcell' placeholder='' class='form-control' value=''/></td>
-          <td><input type='number' name='weekcell' placeholder='' class='form-control' value=''/></td>
-          <td><input type='number' name='weekcell' placeholder='' class='form-control' value=''/></td>
-          <td><input type='number' name='weekcell' placeholder='' class='form-control' value=''/></td>
-          
-        `;
+      <td>${user.code}</td>
+      <td>${user.description}</td>
+      <td>${user.solution}</td>
+      <td>${user.activity_Type}</td>
+      <td>${user.subsidiary}</td>
+      <td>${user.Complementary_desc}</td>
+      <td><input type='number' class='form-control' /></td>
+      <td><input type='number' class='form-control' /></td>
+      <td><input type='number' class='form-control' /></td>
+      <td><input type='number' class='form-control' /></td>
+      <td><input type='number' class='form-control' /></td>
+    `;
     tableBody.appendChild(row);
-    console.log(user.code);
   });
 }
 
-// function addLongPressEvent(row) {
-//   let pressTimer;
-
-//   row.addEventListener("mousedown", () => {
-//     pressTimer = setTimeout(() => {
-//       if (confirm("Do you want to delete this row?")) {
-//         row.remove();
-//       }
-//       row.remove();
-//     }, 1000); // 1000 milliseconds = 1 second
-//   });
-
-//   row.addEventListener("mouseup", () => {
-//     clearTimeout(pressTimer);
-//   });
-
-//   row.addEventListener("mouseleave", () => {
-//     clearTimeout(pressTimer);
-//   });
-// }
-
-// fetch data from projects except 3 rows for dropdown
 let projects = [];
-
 async function fetchProjects() {
   try {
     const response = await fetch("/proj-data");
@@ -191,33 +143,29 @@ async function fetchProjects() {
 
 function renderProjects() {
   const tableBody = document.getElementById("tab_logic").querySelector("tbody");
-  // tableBody.innerHTML = ""; // Clear existing rows
-  projects.forEach((project, index) => {
-    if (index < 3) return; // Skip the first three rows
+  projects.slice(3).forEach((project, index) => {
     const row = document.createElement("tr");
     row.id = `addr${index}`;
     row.innerHTML = `
-          <td></td>
-          <td>${project.description}</td>
-          <td>${project.solution}</td>
-          <td>${project.activity_Type}</td>
-          <td>${project.subsidiary}</td>
-          <td>${project.Complementary_desc}</td>
-          <td>${project.week1}</td>
-          <td>${project.week2}</td>
-          <td>${project.week3}</td>
-          <td>${project.week4}</td>
-          <td>${project.week5}</td>
-        `;
+      <td></td>
+      <td>${project.description}</td>
+      <td>${project.solution}</td>
+      <td>${project.activity_Type}</td>
+      <td>${project.subsidiary}</td>
+      <td>${project.Complementary_desc}</td>
+      <td>${project.week1}</td>
+      <td>${project.week2}</td>
+      <td>${project.week3}</td>
+      <td>${project.week4}</td>
+      <td>${project.week5}</td>
+    `;
     tableBody.appendChild(row);
-    // console.log("projects1:" + projects);
   });
 }
 
 function addProjectRow() {
   const tableBody = document.getElementById("tab_logic").querySelector("tbody");
   const newRow = document.createElement("tr");
-
   newRow.innerHTML = `
     <td></td>
     <td>
@@ -230,13 +178,12 @@ function addProjectRow() {
     <td></td>
     <td></td>
     <td></td>
-    <td><input type="text" name="week1" class="form-control" value="" /></td>
-    <td><input type="text" name="week2" class="form-control" value="" /></td>
-    <td><input type="text" name="week3" class="form-control" value="" /></td>
-    <td><input type="text" name="week4" class="form-control" value="" /></td>
-    <td><input type="text" name="week5" class="form-control" value="" /></td>
+    <td><input type="text" name="week1" class="form-control" /></td>
+    <td><input type="text" name="week2" class="form-control" /></td>
+    <td><input type="text" name="week3" class="form-control" /></td>
+    <td><input type="text" name="week4" class="form-control" /></td>
+    <td><input type="text" name="week5" class="form-control" /></td>
   `;
-
   tableBody.appendChild(newRow);
 }
 
@@ -263,31 +210,24 @@ function generateOptions(values) {
     .join("");
 }
 
-// save report
 async function saveReport() {
-  const yearElement = document.getElementById("year");
-  const monthElement = document.getElementById("month");
-  const weekcell1Element = document.getElementById("weekcell1");
-  const weekcell2Element = document.getElementById("weekcell2");
-  const weekcell3Element = document.getElementById("weekcell3");
-  const weekcell4Element = document.getElementById("weekcell4");
-  const weekcell5Element = document.getElementById("weekcell5");
-
-  const year = yearElement.value;
-  const month = monthElement.value;
-  const weekno1 = weekcell1Element.textContent;
-  const weekno2 = weekcell2Element.textContent;
-  const weekno3 = weekcell3Element.textContent;
-  const weekno4 = weekcell4Element.textContent;
-  const weekno5 = weekcell5Element.textContent;
+  const year = document.getElementById("year").value;
+  const month = document.getElementById("month").value;
+  const weekno1 = document.getElementById("weekcell1").textContent;
+  const weekno2 = document.getElementById("weekcell2").textContent;
+  const weekno3 = document.getElementById("weekcell3").textContent;
+  const weekno4 = document.getElementById("weekcell4").textContent;
+  const weekno5 = document.getElementById("weekcell5").textContent;
+  // const userID = window.localStorage.getItem("userID");
 
   const table = document.getElementById("tab_logic");
   const reportData = [];
   const rows = table.querySelectorAll("tbody tr");
 
-  rows.forEach((row, index) => {
-    const code = row.cells[0].textContent;
+  rows.forEach((row) => {
+    const user_id = window.localStorage.getItem("userID");
 
+    const code = row.cells[0].textContent;
     const description = row.cells[1].textContent;
     const solution = row.cells[2].textContent;
     const activity_Type = row.cells[3].textContent;
@@ -300,6 +240,7 @@ async function saveReport() {
     const data5 = row.cells[10].querySelector("input")?.value || "";
 
     reportData.push({
+      user_id,
       code,
       description,
       solution,
@@ -313,6 +254,7 @@ async function saveReport() {
       data5,
     });
   });
+  console.log("hehe" + reportData);
 
   try {
     const response = await fetch("/save-report", {
@@ -342,10 +284,48 @@ async function saveReport() {
   }
 }
 
+let reports = [];
+async function fetchReport() {
+  try {
+    const response = await fetch("/get-report");
+    const result = await response.json();
+    if (result.success) {
+      reports = result.data;
+      renderReports();
+    } else {
+      console.error("Failed to fetch report data:", result.message);
+    }
+  } catch (error) {
+    console.error("Error fetching report data:", error);
+  }
+}
+
+function renderReports() {
+  const tableBody = document.getElementById("tab_logic").querySelector("tbody");
+  reports.forEach((report) => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${report.code}</td>
+      <td>${report.description}</td>
+      <td>${report.solution}</td>
+      <td>${report.activity_Type}</td>
+      <td>${report.subsidiary}</td>
+      <td>${report.Complementary_desc}</td>
+      <td><input type='number' class='form-control' /></td>
+      <td><input type='number' class='form-control' /></td>
+      <td><input type='number' class='form-control' /></td>
+      <td><input type='number' class='form-control' /></td>
+      <td><input type='number' class='form-control' /></td>
+    `;
+    tableBody.appendChild(row);
+  });
+}
+
 async function loadReport() {
   try {
     const response = await fetch("/get-report");
     const result = await response.json();
+    console.log("results:" + result);
     if (result.success) {
       populateTable(result.data);
     } else {
@@ -358,16 +338,15 @@ async function loadReport() {
 
 function populateTable(data) {
   const tableBody = document.getElementById("tab_logic").querySelector("tbody");
-  tableBody.innerHTML = ""; // Clear existing rows
+  tableBody.innerHTML = "";
 
   data.forEach((rowData) => {
     const newRow = document.createElement("tr");
-
     newRow.innerHTML = `
       <td>${rowData.code}</td>
       <td>${rowData.description}</td>
       <td>${rowData.solution}</td>
-      <td>${rowData.activity_Type}</td>
+      <td>${rowData.activity_type}</td>
       <td>${rowData.subsidiary}</td>
       <td>${rowData.Complementary_desc}</td>
       <td><input type="text" name="week1" class="form-control" value="${rowData.data1}" /></td>
@@ -376,7 +355,6 @@ function populateTable(data) {
       <td><input type="text" name="week4" class="form-control" value="${rowData.data4}" /></td>
       <td><input type="text" name="week5" class="form-control" value="${rowData.data5}" /></td>
     `;
-
     tableBody.appendChild(newRow);
   });
 }

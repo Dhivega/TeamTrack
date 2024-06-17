@@ -68,6 +68,7 @@ router.get("/users-data", userController.getUsers);
 
 router.get("/projects-data", userController.getProjects);
 router.post("/forgot-password", userController.getmail);
+router.get("/get-report", userController.fetchAllWeeklyReports);
 
 // Weekly report:
 // fetch first 3 common rows which are not changing from project table
