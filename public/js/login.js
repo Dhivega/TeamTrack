@@ -6,7 +6,6 @@ document.addEventListener("DOMContentLoaded", function () {
     if (form.checkValidity()) {
       submitButton.disabled = false;
       submitButton.enabled = true;
-      // submitButton.style.backgroundColor = "green";
     } else {
       submitButton.disabled = true;
     }
@@ -14,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 document.getElementById("logIn").addEventListener("submit", async (event) => {
-  event.preventDefault(); // Prevent default form submission
+  event.preventDefault();
 
   const formData = new FormData(event.target);
   const data = Object.fromEntries(formData.entries());
@@ -45,10 +44,10 @@ document.getElementById("logIn").addEventListener("submit", async (event) => {
 
           if (user.role_id === 2) {
             console.log("Redirecting to /demo");
-            window.location.href = "/week"; // Redirect to user dashboard
+            window.location.href = "/week"; //user page
           } else if (user.role_id === 1) {
             console.log("Redirecting to /week");
-            window.location.href = "/demo"; // Redirect to admin page
+            window.location.href = "/demo"; //admin page
           } else {
             console.log("Unknown user role:", user.role_id);
             alert("Unknown user role. Redirecting to unauthorized page.");

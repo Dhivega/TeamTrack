@@ -137,7 +137,7 @@ function renderUsers() {
           <td>${user.solution}</td>
           <td>${user.activity_Type}</td>
           <td>${user.subsidiary}</td>
-          <td>${user.complementary_Description}</td>
+          <td>${user.Complementary_desc}</td>
           <td><input type='number' name='weekcell' placeholder='' id="data1" class='form-control' value=''/></td>
           <td><input type='number' name='weekcell' placeholder='' class='form-control' value=''/></td>
           <td><input type='number' name='weekcell' placeholder='' class='form-control' value=''/></td>
@@ -202,7 +202,7 @@ function renderProjects() {
           <td>${project.solution}</td>
           <td>${project.activity_Type}</td>
           <td>${project.subsidiary}</td>
-          <td>${project.complementary_Description}</td>
+          <td>${project.Complementary_desc}</td>
           <td>${project.week1}</td>
           <td>${project.week2}</td>
           <td>${project.week3}</td>
@@ -253,7 +253,7 @@ function onSelectChange(key, selectElement) {
     row.cells[2].innerText = selectedProject.solution;
     row.cells[3].innerText = selectedProject.activity_Type;
     row.cells[4].innerText = selectedProject.subsidiary;
-    row.cells[5].innerText = selectedProject.complementary_Description;
+    row.cells[5].innerText = selectedProject.Complementary_desc;
   }
 }
 
@@ -292,7 +292,7 @@ async function saveReport() {
     const solution = row.cells[2].textContent;
     const activity_Type = row.cells[3].textContent;
     const subsidiary = row.cells[4].textContent;
-    const complementary_Description = row.cells[5].textContent;
+    const Complementary_desc = row.cells[5].textContent;
     const data1 = row.cells[6].querySelector("input")?.value || "";
     const data2 = row.cells[7].querySelector("input")?.value || "";
     const data3 = row.cells[8].querySelector("input")?.value || "";
@@ -305,7 +305,7 @@ async function saveReport() {
       solution,
       activity_Type,
       subsidiary,
-      complementary_Description,
+      Complementary_desc,
       data1,
       data2,
       data3,
@@ -369,7 +369,7 @@ function populateTable(data) {
       <td>${rowData.solution}</td>
       <td>${rowData.activity_Type}</td>
       <td>${rowData.subsidiary}</td>
-      <td>${rowData.complementary_Description}</td>
+      <td>${rowData.Complementary_desc}</td>
       <td><input type="text" name="week1" class="form-control" value="${rowData.data1}" /></td>
       <td><input type="text" name="week2" class="form-control" value="${rowData.data2}" /></td>
       <td><input type="text" name="week3" class="form-control" value="${rowData.data3}" /></td>

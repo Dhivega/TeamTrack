@@ -482,7 +482,7 @@ exports.getmail = (req, res) => {
 exports.getreport = (req, res) => {
   // console.log("res:" + res);
   const query =
-    "SELECT code as code,Description as description,Solution as solution,Activity_type as activity_Type,subsidiary as subsidiary,Complementary_desc as Complementary_desc  FROM projects limit 3";
+    "SELECT code as code,Description as description,Solution as solution,Activity_type as activity_Type,subsidiary as subsidiary,Complementary_desc as Complementary_desc  FROM projects WHERE code IN ('DEV.H.01', 'DEV.I.01', 'DEV.I.02')";
 
   db.query(query, (err, results) => {
     if (err) {
@@ -499,7 +499,7 @@ exports.getreport = (req, res) => {
 exports.getProj = (req, res) => {
   // console.log("res:" + res);
   const query =
-    "SELECT code as code,Description as description,Solution as solution,Activity_type as activity_Type,subsidiary as subsidiary,Complementary_desc as Complementary_desc FROM projects LIMIT 3, 1000";
+    "SELECT code as code,Description as description,Solution as solution,Activity_type as activity_Type,subsidiary as subsidiary,Complementary_desc as Complementary_desc FROM projects WHERE code NOT IN ('DEV.H.01', 'DEV.I.01', 'DEV.I.02')";
 
   db.query(query, (err, results) => {
     if (err) {

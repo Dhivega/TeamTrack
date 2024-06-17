@@ -71,6 +71,7 @@ router.post("/forgot-password", userController.getmail);
 
 // Weekly report:
 // fetch first 3 common rows which are not changing from project table
+
 router.get("/report-data", userController.getreport);
 
 // fetch dynamically added rows from project table which are added by admin in admin (projects) page
