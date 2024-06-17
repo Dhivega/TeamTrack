@@ -5,7 +5,6 @@ document.addEventListener("DOMContentLoaded", function () {
   form.addEventListener("input", function () {
     if (form.checkValidity()) {
       submitButton.disabled = false;
-      submitButton.enabled = true;
     } else {
       submitButton.disabled = true;
     }
@@ -43,15 +42,15 @@ document.getElementById("logIn").addEventListener("submit", async (event) => {
           window.localStorage.setItem("userID", user.user_id);
 
           if (user.role_id === 2) {
-            console.log("Redirecting to /demo");
-            window.location.href = "/week"; //user page
-          } else if (user.role_id === 1) {
             console.log("Redirecting to /week");
-            window.location.href = "/demo"; //admin page
+            window.location.href = `/week?user_id=${user.user_id}`; //user page
+          } else if (user.role_id === 1) {
+            console.log("Redirecting to /demo");
+            window.location.href = `/demo?user_id=${user.user_id}`; //admin page
           } else {
             console.log("Unknown user role:", user.role_id);
             alert("Unknown user role. Redirecting to unauthorized page.");
-            window.location.href = "/unauthorized";
+            window.location.href = `/unauthorized?user_id=${user.user_id}`;
           }
         } else {
           console.error("Invalid user data:", user);
