@@ -1,0 +1,161 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dynamic Table Rows with Filter</title>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css" />
+    <link rel="stylesheet" href="css/week.css" />
+    <link rel="icon" href="img/icon.jpg">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+
+  
+    <style>
+        .filterable {
+            margin-top: 15px;
+        }
+        .filterable .panel-heading .pull-right {
+            margin-top: -20px;
+        }
+        .filterable .filters input[disabled] {
+            background-color: transparent;
+            border: none;
+            cursor: auto;
+            box-shadow: none;
+            padding: 0;
+            height: auto;
+        }
+        .filterable .filters input[disabled]::placeholder {
+            color: #333;
+        }
+        .panel-heading {
+            background-color: #af007c !important;
+        }
+    </style>
+    <link rel="stylesheet" href="css/week.css">
+</head>
+<header class="wrapper">
+    <div>
+      <a href="your_homepage_url"
+        ><img
+          src="img/fives-logo-white3.png"
+          alt="Your logo"
+          height="50px"
+          width="80px"
+          id="top-left"
+      /></a>
+    </div>
+    <nav class="logo">
+      <a href="/user_module">Home</a>
+      <!-- <a href="">Fives & Me</a> -->
+
+      <a href="/contacts">Contact</a>
+      <!-- <a href="https://fivesgroup.talent-soft.com/MyTalentsoft#/Me">Fives&Me</a> -->
+      <a href="">Profile</a>
+      <a href="/login">Logout</a>
+    </nav>
+  </header>
+<body>
+    <div class="container">
+        <div class="row clearfix">
+            <div class="col-md-12 column">
+                <div class="panel panel-primary filterable">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Weekly Report</h3>
+                        <div class="pull-right" style="color: black;">
+                         <button id="add_project" class="btn btn-default pull-left" style="padding: 2px;margin-right: 10px;">Add Project</button>
+                         <button id="save_report" class="btn btn-default pull-left" style="padding: 2px;margin-right:40px;" onclick="saveReport()">Save Report</button>
+                            <label for="year" style="color: white;">Year:</label>
+                            <input type="number" id="year" min="1900" max="2100" value="2024" style="font-size: medium" name="year"; />
+                            <label for="month" style="color: white;">Month:</label>
+                            <select id="month" name="month" style="padding: 5px">
+                                <option value="1">January</option>
+                                <option value="2">February</option>
+                                <option value="3">March</option>
+                                <option value="4">April</option>
+                                <option value="5">May</option>
+                                <option value="6">June</option>
+                                <option value="7">July</option>
+                                <option value="8">August</option>
+                                <option value="9">September</option>
+                                <option value="10">October</option>
+                                <option value="11">November</option>
+                                <option value="12">December</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- <form action="/save-report" id="savereport" method="post" > -->
+                    <table class="table table-bordered table-hover" id="tab_logic">
+                        <thead>
+                            <tr class="filters">
+                                <th rowspan="2"><input type="text" class="form-control"  disabled />Code</th>
+                                <!-- <th rowspan="2"><input type="text" class="form-control" placeholder="Name" disabled /></th> -->
+                                <th rowspan="2"><input type="text" class="form-control" disabled />Description</th>
+                                <th rowspan="2"><input type="text" class="form-control" disabled />Solution</th>
+                                <th rowspan="2"><input type="text" class="form-control" disabled />Activity Type</th>
+                                <th rowspan="2"><input type="text" class="form-control"  disabled />Subsidiary</th>
+                                <th rowspan="2"><input type="text" class="form-control" disabled />Complementary description</th>
+                                <th id="weekcell1"><input type="text" style="width: 50px;"class="form-control" disabled /></th>
+                                <th id="weekcell2"><input type="text" style="width: 50px;"class="form-control" disabled /></th>
+                                <th id="weekcell3"><input type="text" style="width: 50px;"class="form-control"  disabled /></th>
+                                <th id="weekcell4"><input type="text" style="width: 50px;"class="form-control"  disabled /></th>
+                                <th id="weekcell5" ><input type="text" style="width: 50px;"class="form-control"  disabled /></th>
+                            </tr>
+                            <tr id="row2">
+                                
+                                <td><div id="week1From"></div><div id="week1To"></div></td>
+                                <td><div id="week2From"></div><div id="week2To"></div></td>
+                                <td><div id="week3From"></div><div id="week3To"></div></td>
+                                <td><div id="week4From"></div><div id="week4To"></div></td>
+                                <td><div id="week5From"></div><div id="week5To"></div></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                             <!-- <tr id="addr0">
+                               
+                                <td><input type="number" name="code" class="form-control"/></td>
+                                <td><input type="text" name="description" placeholder="Enter description" class="form-control" /></td>
+                                
+                                <td><input type="text" name="solution" placeholder="Enter Designation" class="form-control" /></td>
+                                <td><input type="text" name="activity_Type" placeholder="Enter Activity_type" class="form-control" /></td>
+                                <td><input type="text" name="subsidiary" placeholder="Enter Subsidiary" class="form-control" /></td>
+                                <td><input type="text" name="complementary_Description" placeholder="Enter complementary_Description" class="form-control" /></td>
+                                <td><input type="text" name="solution" class="form-control" value="" /></td>
+                                <td><input type="text" name="solution" class="form-control" value="" /></td>
+                                <td><input type="text" name="solution" class="form-control" value="" /></td>
+                                <td><input type="text" name="solution" class="form-control" value="" /></td>
+                                <td><input type="text" name="solution" class="form-control" value="" /></td>
+                            </tr> 
+                             <tr id="addr1"></tr>
+                           -->
+                      
+                        
+                        </tbody>
+                       
+
+                        
+                    </form>
+                         
+                    </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+         <!-- <button id="add_row" class="btn btn-default pull-left">Add Row</button>
+        <button id="delete_row" class="pull-right btn btn-default">Delete Row</button>  -->
+    </div>
+    
+    
+
+    <script src="js/week.js"></script>
+</body>
+    <footer>
+        <div id="copyright">&#169 ALL RIGHTS RESERVED</div>
+    </footer>
+    
+    
+
+</html>
