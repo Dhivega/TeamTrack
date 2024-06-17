@@ -35,10 +35,6 @@ router.get("/projects", (req, res) => {
 
 router.post("/login", userController.log);
 router.post("/submit", userController.reg);
-// router.post("/report-table", userController.report);
-// router.post("/project-table", userController.project);
-
-// router.post("/user-table", userController.user);
 
 // Fetch all users
 router.get("/users-data", userController.getAllUsers);

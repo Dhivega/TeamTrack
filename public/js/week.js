@@ -1,4 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
+  console.log("UserID", window.localStorage.getItem("userID"));
+  //user fetch
+  //projects fetch
+  //week report fetch -> userid, current month and year
   setCurrentMonthAndYear();
   fetchProjects();
   fetchUsers();
@@ -218,6 +222,8 @@ async function saveReport() {
   const rows = table.querySelectorAll("tbody tr");
 
   rows.forEach((row) => {
+    const user_id = window.localStorage.getItem("userID");
+
     const code = row.cells[0].textContent;
     const description = row.cells[1].textContent;
     const solution = row.cells[2].textContent;
@@ -231,6 +237,7 @@ async function saveReport() {
     const data5 = row.cells[10].querySelector("input")?.value || "";
 
     reportData.push({
+      user_id,
       code,
       description,
       solution,
@@ -244,7 +251,6 @@ async function saveReport() {
       data5,
     });
   });
-  console.log("hehe" + reportData);
 
   try {
     const response = await fetch("/save-report", {
@@ -310,3 +316,50 @@ function populateTable(data) {
     tableBody.appendChild(newRow);
   });
 }
+
+// async function loadReport() {
+//   const userId = document.getElementById("userId").value;
+//   const year = document.getElementById("year").value;
+//   const month = document.getElementById("month").value;
+
+//   try {
+//     const response = await fetch("/api/reports/weekly", {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify({ user_id: userId, year: year, month: month }),
+//     });
+//     const result = await response.json();
+//     if (result.success) {
+//       populateTable(result.data);
+//     } else {
+//       console.error("Failed to load report:", result.message);
+//     }
+//   } catch (error) {
+//     console.error("Error loading report:", error);
+//   }
+// }
+
+// function populateTable(data) {
+//   const tableBody = document.getElementById("tab_logic").querySelector("tbody");
+//   tableBody.innerHTML = "";
+
+//   data.forEach((rowData) => {
+//     const newRow = document.createElement("tr");
+//     newRow.innerHTML = `
+//       <td>${rowData.code}</td>
+//       <td>${rowData.description}</td>
+//       <td>${rowData.solution}</td>
+//       <td>${rowData.activity_type}</td>
+//       <td>${rowData.subsidiary}</td>
+//       <td>${rowData.Complementary_desc}</td>
+//       <td><input type="text" name="week1" class="form-control" value="${rowData.data1}" /></td>
+//       <td><input type="text" name="week2" class="form-control" value="${rowData.data2}" /></td>
+//       <td><input type="text" name="week3" class="form-control" value="${rowData.data3}" /></td>
+//       <td><input type="text" name="week4" class="form-control" value="${rowData.data4}" /></td>
+//       <td><input type="text" name="week5" class="form-control" value="${rowData.data5}" /></td>
+//     `;
+//     tableBody.appendChild(newRow);
+//   });
+// }

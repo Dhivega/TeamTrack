@@ -489,10 +489,11 @@ exports.saveReport = (req, res) => {
   }
 
   const query = `
-    INSERT INTO weekly_report (code, description, solution, activity_Type, subsidiary, Complementary_desc, year, month, weekno1, weekno2, weekno3, weekno4, weekno5, data1, data2, data3, data4, data5)
+    INSERT INTO weekly_report (user_id,code, description, solution, activity_Type, subsidiary, Complementary_desc, year, month, weekno1, weekno2, weekno3, weekno4, weekno5, data1, data2, data3, data4, data5)
     VALUES ?`;
 
   const values = reportData.map((row) => [
+    row.user_id || null,
     row.code || null,
     row.description || null,
     row.solution || null,
@@ -541,3 +542,34 @@ exports.fetchAllWeeklyReports = (req, res) => {
     res.json({ success: true, data: results });
   });
 };
+
+// exports.fetchAllWeeklyReports = (req, res) => {
+//   const { user_id, year, month } = req.body;
+
+//   // Check if user_id, year, and month are provided
+//   if (!user_id || !year || !month) {
+//     return res.status(400).json({
+//       success: false,
+//       message: "user_id, year, and month are required",
+//     });
+//   }
+
+//   const query = `
+//     SELECT * FROM weekly_report
+//     WHERE user_id = ? AND year = ? AND month = ?
+//   `;
+
+//   db.query(query, [user_id, year, month], (error, results) => {
+//     if (error) {
+//       console.error("Error fetching data:", error);
+//       return res.status(500).json({
+//         success: false,
+//         message: "Failed to fetch report data",
+//       });
+//     }
+//     res.json({
+//       success: true,
+//       data: results,
+//     });
+//   });
+// };
