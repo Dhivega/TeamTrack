@@ -526,10 +526,9 @@ exports.saveReport = (req, res) => {
     res.json({ success: true, message: "Report saved successfully!" });
   });
 };
-
 exports.fetchAllWeeklyReports = (req, res) => {
   const { user_id, year, month } = req.query;
-  console.log("req.query" + req.query);
+  console.log("req.query:", req.query);
 
   if (!user_id || !year || !month) {
     return res
@@ -540,12 +539,12 @@ exports.fetchAllWeeklyReports = (req, res) => {
   const query = `
     SELECT * 
     FROM weekly_report 
-    WHERE user_id = '184'? 
-      AND year = '2024'? 
-      AND month = '6'?;
+    WHERE user_id = ? 
+      AND year = ? 
+      AND month = ?;
   `;
 
-  db.query(query, (error, results) => {
+  db.query(query, [user_id, year, month], (error, results) => {
     if (error) {
       console.error("Error fetching data:", error);
       return res

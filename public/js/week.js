@@ -1,16 +1,22 @@
 document.addEventListener("DOMContentLoaded", () => {
   console.log("UserID", window.localStorage.getItem("userID"));
-  //user fetch
-  //projects fetch
-  //week report fetch -> userid, current month and year
   setCurrentMonthAndYear();
   fetchProjects();
   fetchUsers();
-  loadReport();
+  loadReport(); // Load the report initially
   generateTable();
+
   document
     .getElementById("add_project")
     .addEventListener("click", addProjectRow);
+  document.getElementById("month").addEventListener("change", () => {
+    generateTable();
+    loadReport(); // Load the report when the month changes
+  });
+  document.getElementById("year").addEventListener("change", () => {
+    generateTable();
+    loadReport(); // Load the report when the year changes
+  });
 });
 
 document.getElementById("month").addEventListener("change", generateTable);
@@ -18,13 +24,11 @@ document.getElementById("year").addEventListener("change", generateTable);
 
 function generateTable() {
   const month = parseInt(document.getElementById("month").value);
-  const m = month.textContent;
-  console.log("Month:" + month);
   const year = parseInt(document.getElementById("year").value);
   const tableBody = document.getElementById("tab_logic").querySelector("tbody");
   tableBody.innerHTML = "";
   renderUsers();
-
+  loadReport();
   let firstDay = new Date(year, month - 1, 1);
   let firstMonday = new Date(firstDay);
   firstMonday.setDate(
@@ -218,7 +222,6 @@ async function saveReport() {
   const weekno3 = document.getElementById("weekcell3").textContent;
   const weekno4 = document.getElementById("weekcell4").textContent;
   const weekno5 = document.getElementById("weekcell5").textContent;
-  // const userID = window.localStorage.getItem("userID");
 
   const table = document.getElementById("tab_logic");
   const reportData = [];
@@ -226,7 +229,6 @@ async function saveReport() {
 
   rows.forEach((row) => {
     const user_id = window.localStorage.getItem("userID");
-
     const code = row.cells[0].textContent;
     const description = row.cells[1].textContent;
     const solution = row.cells[2].textContent;
@@ -283,49 +285,52 @@ async function saveReport() {
     console.error("Error saving report:", error);
   }
 }
+// let reports = [];
+// async function fetchReport() {
+//   try {
+//     const response = await fetch("/get-report");
+//     const result = await response.json();
+//     if (result.success) {
+//       reports = result.data;
+//       renderReports();
+//     } else {
+//       console.error("Failed to fetch report data:", result.message);
+//     }
+//   } catch (error) {
+//     console.error("Error fetching report data:", error);
+//   }
+// }
 
-let reports = [];
-async function fetchReport() {
-  try {
-    const response = await fetch("/get-report");
-    const result = await response.json();
-    if (result.success) {
-      reports = result.data;
-      renderReports();
-    } else {
-      console.error("Failed to fetch report data:", result.message);
-    }
-  } catch (error) {
-    console.error("Error fetching report data:", error);
-  }
-}
-
-function renderReports() {
-  const tableBody = document.getElementById("tab_logic").querySelector("tbody");
-  reports.forEach((report) => {
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td>${report.code}</td>
-      <td>${report.description}</td>
-      <td>${report.solution}</td>
-      <td>${report.activity_Type}</td>
-      <td>${report.subsidiary}</td>
-      <td>${report.Complementary_desc}</td>
-      <td><input type='number' class='form-control' /></td>
-      <td><input type='number' class='form-control' /></td>
-      <td><input type='number' class='form-control' /></td>
-      <td><input type='number' class='form-control' /></td>
-      <td><input type='number' class='form-control' /></td>
-    `;
-    tableBody.appendChild(row);
-  });
-}
-
+// function renderReports() {
+//   const tableBody = document.getElementById("tab_logic").querySelector("tbody");
+//   reports.forEach((report) => {
+//     const row = document.createElement("tr");
+//     row.innerHTML = `
+//       <td>${report.code}</td>
+//       <td>${report.description}</td>
+//       <td>${report.solution}</td>
+//       <td>${report.activity_Type}</td>
+//       <td>${report.subsidiary}</td>
+//       <td>${report.Complementary_desc}</td>
+//       <td><input type="text" name="week1" class="form-control" value="${report.data1}" /></td>
+//       <td><input type="text" name="week2" class="form-control" value="${report.data2}" /></td>
+//      <td><input type="text" name="week3" class="form-control" value="${report.data3}" /></td>
+//      <td><input type="text" name="week4" class="form-control" value="${report.data4}" /></td>
+//     <td><input type="text" name="week5" class="form-control" value="${report.data5}" /></td>
+//     `;
+//     tableBody.appendChild(row);
+//   });
+// }
 async function loadReport() {
+  const user_id = window.localStorage.getItem("userID");
+  const year = document.getElementById("year").value;
+  const month = document.getElementById("month").value;
+
   try {
-    const response = await fetch("/get-report");
+    const response = await fetch(
+      `/get-report?user_id=${user_id}&year=${year}&month=${month}`
+    );
     const result = await response.json();
-    console.log("results:" + result);
     if (result.success) {
       populateTable(result.data);
     } else {
@@ -346,14 +351,24 @@ function populateTable(data) {
       <td>${rowData.code}</td>
       <td>${rowData.description}</td>
       <td>${rowData.solution}</td>
-      <td>${rowData.activity_type}</td>
+      <td>${rowData.activity_Type}</td>
       <td>${rowData.subsidiary}</td>
       <td>${rowData.Complementary_desc}</td>
-      <td><input type="text" name="week1" class="form-control" value="${rowData.data1}" /></td>
-      <td><input type="text" name="week2" class="form-control" value="${rowData.data2}" /></td>
-      <td><input type="text" name="week3" class="form-control" value="${rowData.data3}" /></td>
-      <td><input type="text" name="week4" class="form-control" value="${rowData.data4}" /></td>
-      <td><input type="text" name="week5" class="form-control" value="${rowData.data5}" /></td>
+      <td><input type="text" name="week1" class="form-control" value="${
+        rowData.data1 || ""
+      }" /></td>
+      <td><input type="text" name="week2" class="form-control" value="${
+        rowData.data2 || ""
+      }" /></td>
+      <td><input type="text" name="week3" class="form-control" value="${
+        rowData.data3 || ""
+      }" /></td>
+      <td><input type="text" name="week4" class="form-control" value="${
+        rowData.data4 || ""
+      }" /></td>
+      <td><input type="text" name="week5" class="form-control" value="${
+        rowData.data5 || ""
+      }" /></td>
     `;
     tableBody.appendChild(newRow);
   });

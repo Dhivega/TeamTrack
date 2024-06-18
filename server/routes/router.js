@@ -25,8 +25,8 @@ router.get("/forgot", (req, res) => {
   res.render("forgot");
 });
 
-router.get("/demo", (req, res) => {
-  res.render("demo");
+router.get("/admin", (req, res) => {
+  res.render("admin");
 });
 
 router.get("/week", (req, res) => {
@@ -45,6 +45,7 @@ router.post("/submit", userController.reg);
 
 // Fetch all users
 router.get("/users-data", userController.getAllUsers);
+// router.get("/managers-data", userController.getManagers);
 
 // Add a new user
 router.post("/save", userController.addUser);
@@ -80,6 +81,6 @@ router.get("/proj-data", userController.getProj);
 
 // save report of users week report in weekly report table
 router.post("/save-report", userController.saveReport);
-// router.get("/get-report", userController.fetchAllWeeklyReports);
+router.get("/get-report", userController.fetchAllWeeklyReports);
 
 module.exports = router;
