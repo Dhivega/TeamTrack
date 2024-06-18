@@ -401,46 +401,13 @@ exports.getProjects = (req, res) => {
   });
 };
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465, // Use 587 for TLS
-  secure: true, // true for 465, false for 587
-  auth: {
-    user: "shwethasahi1914@getMaxListeners.com, // Your email",
-    pass: "Ramalingamswetha@1914",
-  },
-});
-
-exports.getmail = (req, res) => {
-  const { email } = req.body;
-  const resetLink = `http://your-domain.com/reset-password?email=${email}`;
-
-  const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: email,
-    subject: "Password Reset",
-    text: `Click the link to reset your password: ${resetLink}`,
-  };
-  console.log(email);
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.error("Error sending email:", error);
-      return res
-        .status(500)
-        .json({ success: false, message: "Error sending email" });
-    }
-    console.log("Email sent:", info.response);
-    res.status(200).json({ success: true, message: "Reset link sent" });
-  });
-};
-
 // Weekly report:
 // fetch first 3 common rows which are not changing from project table
 
 exports.getreport = (req, res) => {
   // console.log("res:" + res);
   const query =
-    "SELECT code as code,Description as description,Solution as solution,Activity_Type as activity_Type,subsidiary as subsidiary,Complementary_desc as Complementary_desc  FROM projects WHERE code IN ('DEV.H.01', 'DEV.I.01', 'DEV.I.02')";
+    "SELECT code as code,Description as description,Solution as solution,activity_Type as activity_Type,subsidiary as subsidiary,Complementary_desc as Complementary_desc  FROM projects WHERE code IN ('DEV.H.01', 'DEV.I.01', 'DEV.I.02')";
 
   db.query(query, (err, results) => {
     if (err) {
@@ -455,7 +422,7 @@ exports.getreport = (req, res) => {
 
 exports.getProj = (req, res) => {
   const query =
-    "SELECT code as code,Description as description,Solution as solution,Activity_type as activity_Type,subsidiary as subsidiary,Complementary_desc as Complementary_desc FROM projects WHERE code NOT IN ('DEV.H.01', 'DEV.I.01', 'DEV.I.02')";
+    "SELECT code as code,Description as description,Solution as solution,activity_type as activity_Type,subsidiary as subsidiary,Complementary_desc as Complementary_desc FROM projects WHERE code NOT IN ('DEV.H.01', 'DEV.I.01', 'DEV.I.02')";
 
   db.query(query, (err, results) => {
     if (err) {

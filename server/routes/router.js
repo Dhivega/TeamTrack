@@ -29,6 +29,7 @@ router.get("/demo", (req, res) => {
 router.get("/week", (req, res) => {
   res.render("week");
 });
+
 router.get("/projects", (req, res) => {
   res.render("projects");
 });
@@ -60,7 +61,6 @@ router.post("/add-progress", userController.addprogress);
 router.get("/users-data", userController.getUsers);
 
 router.get("/projects-data", userController.getProjects);
-router.post("/forgot-password", userController.getmail);
 
 router.get("/report-data", userController.getreport);
 

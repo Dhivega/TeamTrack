@@ -322,7 +322,7 @@ function populateTable(data) {
       <td>${rowData.code}</td>
       <td>${rowData.description}</td>
       <td>${rowData.solution}</td>
-      <td>${rowData.activity_Type}</td>
+      <td>${rowData.activity_type}</td>
       <td>${rowData.subsidiary}</td>
       <td>${rowData.Complementary_desc}</td>
       <td><input type="text" name="week1" class="form-control" value="${rowData.data1}" /></td>
