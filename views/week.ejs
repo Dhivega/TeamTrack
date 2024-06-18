@@ -54,7 +54,7 @@
       <!-- <a href="/contacts">Contact</a> -->
       <!-- <a href="https://fivesgroup.talent-soft.com/MyTalentsoft#/Me">Fives&Me</a> -->
       <!-- <a href="">Profile</a> -->
-      <a href="/login">Logout</a>
+      <a href="/login" id="logout-link">Logout</a>
     </nav>
   </header>
 <body>
@@ -128,6 +128,16 @@
         </div>
 
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("logout-link").addEventListener("click", (event) => {
+                event.preventDefault();
+                window.localStorage.removeItem("userID");
+                window.location.href = event.target.href;
+            });
+        });
+    </script>
     
     
 

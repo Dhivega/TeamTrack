@@ -163,13 +163,22 @@ function renderProjects() {
 
 function addProjectRow() {
   const tableBody = document.getElementById("tab_logic").querySelector("tbody");
+
+  const existingDescriptions = Array.from(tableBody.querySelectorAll("tr"))
+    .map((row) => row.cells[1].textContent)
+    .filter((desc) => desc.trim() !== "");
+
+  const availableDescriptions = projects
+    .map((project) => project.description)
+    .filter((desc) => !existingDescriptions.includes(desc));
+
   const newRow = document.createElement("tr");
   newRow.innerHTML = `
     <td></td>
     <td>
       <select class="form-control" onchange="onSelectChange('description', this)">
         <option value=''>Select description</option>
-        ${generateOptions(projects.map((project) => project.description))}
+        ${generateOptions(availableDescriptions)}
       </select>
     </td>
     <td></td>
