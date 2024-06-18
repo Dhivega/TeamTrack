@@ -43,10 +43,12 @@ document.getElementById("logIn").addEventListener("submit", async (event) => {
 
           if (user.role_id === 2) {
             console.log("Redirecting to /week");
-            window.location.href = `/week?user_id=${user.user_id}`; //user page
+
+            window.location.href = `/week`; //user page
           } else if (user.role_id === 1) {
             console.log("Redirecting to /demo");
-            window.location.href = `/demo?user_id=${user.user_id}`; //admin page
+            window.location.href = `/demo`; //admin page
+
           } else {
             console.log("Unknown user role:", user.role_id);
             alert("Unknown user role. Redirecting to unauthorized page.");
