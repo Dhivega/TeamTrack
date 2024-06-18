@@ -67,10 +67,12 @@
                 <li><a class="dropdown-item" href="/demo">Users</a></li>
                 <li><a class="dropdown-item" href="/projects">Projects</a></li>
                 <li><a class="dropdown-item" href="/progress">Progress</a></li>
+                <li><a class="dropdown-item" href="/week">Report</a></li>
+
             </ul>
 
       <!-- <a href="">MyProfile</a> -->
-      <a href="/login">Logout</a>
+      <a href="/login" id="logout-link">Logout</a>
     </nav>
     <center> <h4 style="margin-right:0px;margin-top:-50px; color: white;">ADMINISTRATOR</h4></center>
   </header>
@@ -473,13 +475,21 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script>
+
+document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("logout-link").addEventListener("click", (event) => {
+                event.preventDefault();
+                window.localStorage.removeItem("userID");
+                window.location.href = event.target.href;
+            });
+        });
       document.addEventListener("DOMContentLoaded", function () {
         const addProjectButton = document.getElementById("add_project");
         const saveChangesButton = document.getElementById("saveChanges");
         const editModal = $("#editModal");
         const projectForm = document.getElementById("projectForm");
         let editRow = null;
-        let projects = []; // Store all projects data
+        let projects = []; 
         let currentPage = 1;
         const rowsPerPage = 3;
 
@@ -527,7 +537,7 @@
 
         function displayProjects() {
           const tbody = document.querySelector("#tab_logic tbody");
-          tbody.innerHTML = ""; // Clear existing rows
+          tbody.innerHTML = ""; 
 
           const start = (currentPage - 1) * rowsPerPage;
           const end = start + rowsPerPage;
@@ -582,7 +592,7 @@
           };
 
           if (editRow) {
-            // Update project
+            
             fetch('/update-project', {
               method: 'PUT',
               headers: {
@@ -594,7 +604,6 @@
             .then(data => {
               if (data.success) {
                 alert("updated successfully");
-                // Update project in local array
                 const index = projects.findIndex(project => project.Project_id == formData.Project_id);
                 projects[index] = formData;
                 displayProjects();
@@ -605,7 +614,6 @@
               console.error('Error:', error);
             });
           } else {
-            // Add new project
             fetch('/add-project', {
               method: 'POST',
               headers: {
@@ -617,8 +625,7 @@
             .then(data => {
               if (data.success) {
                 alert("project added successfully");
-                // Add new project to local array
-                formData.Project_id = data.Project_id; // Use the returned ID
+                formData.Project_id = data.Project_id; 
                 projects.push(formData);
                 displayProjects();
                 fetchProjects();
@@ -632,7 +639,6 @@
           editModal.modal("hide");
         });
 
-        // Edit and Delete button click event for dynamically added rows
         document.querySelector("#tab_logic tbody").addEventListener("click", function (event) {
           if (event.target.classList.contains("editrow")) {
             editRow = event.target.closest("tr");
@@ -653,7 +659,6 @@
             .then(data => {
               if (data.success) {
                 alert('User deleted successfully');
-                // Remove project from local array
                 projects = projects.filter(project => project.Project_id != projectId);
                 displayProjects();
                 fetchProjects();
@@ -681,7 +686,6 @@
 
         fetchProjects();
 
-        // Function to fetch projects data
         function fetchProjects() {
           fetch('/projects-data')
             .then(response => response.json())

@@ -71,9 +71,11 @@ table th {
       <li><a class="dropdown-item" href="/demo">Users</a></li>
       <li><a class="dropdown-item" href="/projects">Projects</a></li>
       <li><a class="dropdown-item" href="/progress">Progress</a></li>
+      <li><a class="dropdown-item" href="/week">Report</a></li>
+
     </ul>
     <!-- <a href="">MyProfile</a> -->
-    <a href="/login">Logout</a>
+    <a href="/login" id="logout-link">Logout</a>
   </nav>
   <center> <h4 style="margin-right:0px;margin-top:-50px; color: white;">ADMINISTRATOR</h4></center>
 </header>
@@ -194,6 +196,14 @@ table th {
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script>
+
+document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("logout-link").addEventListener("click", (event) => {
+                event.preventDefault();
+                window.localStorage.removeItem("userID");
+                window.location.href = event.target.href;
+            });
+        });
 document.addEventListener("DOMContentLoaded", function() {
   const addProjectButton = document.getElementById("add_project");
   const saveChangesButton = document.getElementById("saveChanges");

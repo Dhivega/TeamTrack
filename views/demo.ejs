@@ -54,10 +54,11 @@
                 <li><a class="dropdown-item" href="/demo">Users</a></li>
                 <li><a class="dropdown-item" href="/projects">Projects</a></li>
                 <li><a class="dropdown-item" href="/progress">Progress</a></li>
+                <li><a class="dropdown-item" href="/week">Report</a></li>
+
             </ul>
 
-            <!-- <a href="">MyProfile</a> -->
-            <a href="/login">Logout</a>
+            <a href="/login" id="logout-link">Logout</a>
         </nav>
     <center> <h4 style="margin-right:0px;margin-top:-50px; color: white;">ADMINISTRATOR</h4></center>
 
@@ -91,7 +92,6 @@
                         <tbody>
                         </tbody>
                     </table>
-                    <!-- Pagination controls -->
                     
                 </div>
             </div>
@@ -167,7 +167,6 @@
                 <h4 class="modal-title" id="alertModalLabel">Notification</h4>
             </div>
             <div class="modal-body" id="alertMessage">
-                <!-- Alert message will be inserted here -->
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
@@ -176,7 +175,6 @@
     </div>
 </div>
 
-<!-- Confirmation Modal -->
 <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -199,11 +197,19 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script>
+
+document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("logout-link").addEventListener("click", (event) => {
+                event.preventDefault();
+                window.localStorage.removeItem("userID");
+                window.location.href = event.target.href;
+            });
+        });
         document.addEventListener("DOMContentLoaded", function() {
             let currentPage = 1;
             const rowsPerPage = 4;
             let usersData = [];
-            let userIdToDelete = null; // Store the user ID to delete
+            let userIdToDelete = null; 
         
             function showAlert(message) {
                 document.getElementById('alertMessage').textContent = message;
@@ -215,27 +221,6 @@
                 $('#confirmModal').modal('show');
             }
         
-            // function fetchUsers() {
-            //     fetch('/users-data')
-            //         .then(response => {
-            //             if (!response.ok) {
-            //                 throw new Error('Failed to fetch user data');
-            //             }
-            //             return response.json();
-            //         })
-            //         .then(data => {
-            //             if (data.success) {
-            //                 usersData = data.data;
-            //                 displayUsers();
-            //             } else {
-            //                 showAlert('Failed to fetch user data');
-            //             }
-            //         })
-            //         .catch(error => {
-            //             console.error('Error fetching user data:', error);
-            //             showAlert('Error fetching user data');
-            //         });
-            // }
             function fetchUsers() {
     fetch('/users-data')
         .then(response => {
@@ -245,7 +230,7 @@
             return response.json();
         })
         .then(data => {
-            console.log('Fetched data:', data); // Add this line
+            console.log('Fetched data:', data); 
             if (data.success) {
                 usersData = data.data;
                 displayUsers();
@@ -260,36 +245,6 @@
 }
 
 
-
-            // function displayUsers() {
-            //     const tbody = document.querySelector('#tab_logic tbody');
-            //     tbody.innerHTML = '';
-            //     const start = (currentPage - 1) * rowsPerPage;
-            //     const end = Math.min(start + rowsPerPage, usersData.length);
-        
-            //     for (let i = start; i < end; i++) {
-            //         const user = usersData[i];
-            //         const row = `<tr>
-            //             <td>${user.user_id}</td>
-            //             <td>${user.name}</td>
-            //             <td>${user.mail}</td>
-            //             <td>${user.Designation}</td>
-            //             <td>${user.Manager}</td>
-            //             <td>${user.statusName}</td>
-            //             <td>${user.roleName}</td>
-            //             <td>
-            //                 <button class="btn btn-xs btn-info editUser" data-id="${user.user_id}">Edit</button>
-            //                 <button class="btn btn-xs btn-danger deleteUser" data-id="${user.user_id}">Delete</button>
-            //             </td>
-            //         </tr>`;
-            //         tbody.insertAdjacentHTML('beforeend', row);
-            //     }
-        
-            //     document.getElementById("prevPage").parentElement.classList.toggle("disabled", currentPage === 1);
-            //     document.getElementById("nextPage").parentElement.classList.toggle("disabled", end >= usersData.length);
-                
-            //     addEditDeleteEventListeners();
-            // }
             function displayUsers() {
     const tbody = document.querySelector('#tab_logic tbody');
     tbody.innerHTML = '';
@@ -347,30 +302,6 @@
                 });
             }
         
-            // function addEditDeleteEventListeners() {
-            //     document.querySelectorAll('.editUser').forEach(button => {
-            //         button.addEventListener('click', function() {
-            //             const userId = this.dataset.id;
-            //             const user = usersData.find(user => user.user_id == userId);
-            //             document.querySelector('#editUserId').value = user.user_id;
-            //             document.querySelector('#editUserName').value = user.name;
-            //             document.querySelector('#editUserEmail').value = user.mail;
-            //             document.querySelector('#editUserDesignation').value = user.Designation;
-            //             document.querySelector('#editUserManager').value = user.Manager;
-            //             document.querySelector('#editUserStatus').value = user.statusName;
-            //             document.querySelector('#editUserrole').value = user.roleName;
-        
-            //             $('#editModal').modal('show');
-            //         });
-            //     });
-        
-            //     document.querySelectorAll('.deleteUser').forEach(button => {
-            //         button.addEventListener('click', function() {
-            //             const userId = this.dataset.id;
-            //             showConfirm(userId); // Show confirmation modal
-            //         });
-            //     });
-            // }
             function addEditDeleteEventListeners() {
     document.querySelectorAll('.editUser').forEach(button => {
         button.addEventListener('click', function() {
@@ -391,7 +322,7 @@
     document.querySelectorAll('.deleteUser').forEach(button => {
         button.addEventListener('click', function() {
             const userId = this.dataset.id;
-            showConfirm(userId); // Show confirmation modal
+            showConfirm(userId); 
         });
     });
 }
