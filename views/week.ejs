@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Dynamic Table Rows with Filter</title>
+    <title>Weekly Report</title>
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css" />
     <link rel="stylesheet" href="css/week.css" />
     <link rel="icon" href="img/icon.jpg">
@@ -47,14 +47,14 @@
           id="top-left"
       /></a>
     </div>
-    <nav class="logo">
-      <a href="/user_module">Home</a>
+    <nav class="logo" style="margin-left: 180px;">
+      <a href="/week">Home</a>
       <!-- <a href="">Fives & Me</a> -->
 
-      <a href="/contacts">Contact</a>
+      <!-- <a href="/contacts">Contact</a> -->
       <!-- <a href="https://fivesgroup.talent-soft.com/MyTalentsoft#/Me">Fives&Me</a> -->
-      <a href="">Profile</a>
-      <a href="/login">Logout</a>
+      <!-- <a href="">Profile</a> -->
+      <a href="/login" id="logout-link">Logout</a>
     </nav>
   </header>
 <body>
@@ -114,24 +114,6 @@
                         </thead>
                         <tbody>
                             
-                             <!-- <tr id="addr0">
-                               
-                                <td><input type="number" name="code" class="form-control"/></td>
-                                <td><input type="text" name="description" placeholder="Enter description" class="form-control" /></td>
-                                
-                                <td><input type="text" name="solution" placeholder="Enter Designation" class="form-control" /></td>
-                                <td><input type="text" name="activity_Type" placeholder="Enter Activity_type" class="form-control" /></td>
-                                <td><input type="text" name="subsidiary" placeholder="Enter Subsidiary" class="form-control" /></td>
-                                <td><input type="text" name="complementary_Description" placeholder="Enter complementary_Description" class="form-control" /></td>
-                                <td><input type="text" name="solution" class="form-control" value="" /></td>
-                                <td><input type="text" name="solution" class="form-control" value="" /></td>
-                                <td><input type="text" name="solution" class="form-control" value="" /></td>
-                                <td><input type="text" name="solution" class="form-control" value="" /></td>
-                                <td><input type="text" name="solution" class="form-control" value="" /></td>
-                            </tr> 
-                             <tr id="addr1"></tr>
-                           -->
-                      
                         
                         </tbody>
                        
@@ -144,9 +126,18 @@
                 </div>
             </div>
         </div>
-         <!-- <button id="add_row" class="btn btn-default pull-left">Add Row</button>
-        <button id="delete_row" class="pull-right btn btn-default">Delete Row</button>  -->
+
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("logout-link").addEventListener("click", (event) => {
+                event.preventDefault();
+                window.localStorage.removeItem("userID");
+                window.location.href = event.target.href;
+            });
+        });
+    </script>
     
     
 
