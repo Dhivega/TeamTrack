@@ -67,12 +67,14 @@
                 <li><a class="dropdown-item" href="/demo">Users</a></li>
                 <li><a class="dropdown-item" href="/projects">Projects</a></li>
                 <li><a class="dropdown-item" href="/progress">Progress</a></li>
+
                 <li><a class="dropdown-item" href="/week">Report</a></li>
 
             </ul>
 
       <!-- <a href="">MyProfile</a> -->
       <a href="/login" id="logout-link">Logout</a>
+
     </nav>
     <center> <h4 style="margin-right:0px;margin-top:-50px; color: white;">ADMINISTRATOR</h4></center>
   </header>
@@ -476,20 +478,16 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script>
 
-document.addEventListener("DOMContentLoaded", () => {
-            document.getElementById("logout-link").addEventListener("click", (event) => {
-                event.preventDefault();
-                window.localStorage.removeItem("userID");
-                window.location.href = event.target.href;
-            });
-        });
+
       document.addEventListener("DOMContentLoaded", function () {
         const addProjectButton = document.getElementById("add_project");
         const saveChangesButton = document.getElementById("saveChanges");
         const editModal = $("#editModal");
         const projectForm = document.getElementById("projectForm");
         let editRow = null;
+
         let projects = []; 
+
         let currentPage = 1;
         const rowsPerPage = 3;
 
@@ -537,7 +535,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         function displayProjects() {
           const tbody = document.querySelector("#tab_logic tbody");
-          tbody.innerHTML = ""; 
+
+          tbody.innerHTML = ""; // Clear existing rows
+
 
           const start = (currentPage - 1) * rowsPerPage;
           const end = start + rowsPerPage;
@@ -592,7 +592,9 @@ document.addEventListener("DOMContentLoaded", () => {
           };
 
           if (editRow) {
+
             
+
             fetch('/update-project', {
               method: 'PUT',
               headers: {
@@ -604,6 +606,8 @@ document.addEventListener("DOMContentLoaded", () => {
             .then(data => {
               if (data.success) {
                 alert("updated successfully");
+
+
                 const index = projects.findIndex(project => project.Project_id == formData.Project_id);
                 projects[index] = formData;
                 displayProjects();
@@ -614,6 +618,8 @@ document.addEventListener("DOMContentLoaded", () => {
               console.error('Error:', error);
             });
           } else {
+
+
             fetch('/add-project', {
               method: 'POST',
               headers: {
@@ -625,7 +631,9 @@ document.addEventListener("DOMContentLoaded", () => {
             .then(data => {
               if (data.success) {
                 alert("project added successfully");
+
                 formData.Project_id = data.Project_id; 
+
                 projects.push(formData);
                 displayProjects();
                 fetchProjects();
@@ -638,6 +646,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
           editModal.modal("hide");
         });
+
+
 
         document.querySelector("#tab_logic tbody").addEventListener("click", function (event) {
           if (event.target.classList.contains("editrow")) {
@@ -659,6 +669,8 @@ document.addEventListener("DOMContentLoaded", () => {
             .then(data => {
               if (data.success) {
                 alert('User deleted successfully');
+
+
                 projects = projects.filter(project => project.Project_id != projectId);
                 displayProjects();
                 fetchProjects();
@@ -685,6 +697,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         fetchProjects();
+
 
         function fetchProjects() {
           fetch('/projects-data')

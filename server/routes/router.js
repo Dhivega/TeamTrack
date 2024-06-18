@@ -14,24 +14,24 @@ router.get("/login", (req, res) => {
   res.render("login");
 });
 
-router.get("/progress", (req, res) => {
-  res.render("progress");
-});
-
 router.get("/forgot", (req, res) => {
   res.render("forgot");
 });
 
-router.get("/demo", (req, res) => {
-  res.render("demo");
+router.get("/admin", (req, res) => {
+  res.render("admin");
 });
 
-router.get("/week", (req, res) => {
-  res.render("week");
+router.get("/progress", (req, res) => {
+  res.render("progress");
 });
 
 router.get("/projects", (req, res) => {
   res.render("projects");
+});
+
+router.get("/week", (req, res) => {
+  res.render("week");
 });
 
 router.post("/login", userController.log);
