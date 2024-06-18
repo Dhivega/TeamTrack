@@ -440,7 +440,7 @@ exports.getmail = (req, res) => {
 exports.getreport = (req, res) => {
   // console.log("res:" + res);
   const query =
-    "SELECT code as code,Description as description,Solution as solution,Activity_type as activity_Type,subsidiary as subsidiary,Complementary_desc as Complementary_desc  FROM projects WHERE code IN ('DEV.H.01', 'DEV.I.01', 'DEV.I.02')";
+    "SELECT code as code,Description as description,Solution as solution,Activity_Type as activity_Type,subsidiary as subsidiary,Complementary_desc as Complementary_desc  FROM projects WHERE code IN ('DEV.H.01', 'DEV.I.01', 'DEV.I.02')";
 
   db.query(query, (err, results) => {
     if (err) {
@@ -488,51 +488,146 @@ exports.saveReport = (req, res) => {
       .json({ success: false, message: "No report data provided" });
   }
 
-  const query = `
-    INSERT INTO weekly_report (user_id,code, description, solution, activity_Type, subsidiary, Complementary_desc, year, month, weekno1, weekno2, weekno3, weekno4, weekno5, data1, data2, data3, data4, data5)
-    VALUES ?`;
-
-  const values = reportData.map((row) => [
-    row.user_id || null,
-    row.code || null,
-    row.description || null,
-    row.solution || null,
-    row.activity_Type || null,
-    row.subsidiary || null,
-    row.Complementary_desc || null,
-    year,
-    month,
-    weekno1,
-    weekno2,
-    weekno3,
-    weekno4,
-    weekno5,
-    row.data1 || null,
-    row.data2 || null,
-    row.data3 || null,
-    row.data4 || null,
-    row.data5 || null,
-  ]);
-
-  console.log("Values:", values);
-
-  db.query(query, [values], (error, results) => {
-    if (error) {
-      console.error("Error inserting data:", error);
-      return res
-        .status(500)
-        .json({ success: false, message: "Failed to save report" });
-    }
-    res.json({ success: true, message: "Report saved successfully!" });
-  });
-};
-
-exports.fetchAllWeeklyReports = (req, res) => {
-  const query = `
-    SELECT * FROM weekly_report
+  const insertQuery = `
+    INSERT INTO weekly_report (user_id, code, description, solution, activity_Type, subsidiary, Complementary_desc, year, month, weekno1, weekno2, weekno3, weekno4, weekno5, data1, data2, data3, data4, data5)
+    VALUES ?
   `;
 
-  db.query(query, (error, results) => {
+  const updateQuery = `
+    UPDATE weekly_report
+    SET description = ?, solution = ?, activity_Type = ?, subsidiary = ?, Complementary_desc = ?, weekno1 = ?, weekno2 = ?, weekno3 = ?, weekno4 = ?, weekno5 = ?, data1 = ?, data2 = ?, data3 = ?, data4 = ?, data5 = ?
+    WHERE user_id = ? AND year = ? AND month = ? AND code = ?
+  `;
+
+  const checkQuery = `
+    SELECT report_id FROM weekly_report
+    WHERE user_id = ? AND year = ? AND month = ? AND code = ?
+  `;
+
+  const insertValues = [];
+  const updatePromises = [];
+
+  reportData.forEach((row) => {
+    const {
+      user_id,
+      code,
+      description,
+      solution,
+      activity_Type,
+      subsidiary,
+      Complementary_desc,
+      data1,
+      data2,
+      data3,
+      data4,
+      data5,
+    } = row;
+
+    const values = [
+      description || null,
+      solution || null,
+      activity_Type || null,
+      subsidiary || null,
+      Complementary_desc || null,
+      weekno1,
+      weekno2,
+      weekno3,
+      weekno4,
+      weekno5,
+      data1 || "",
+      data2 || "",
+      data3 || "",
+      data4 || "",
+      data5 || "",
+      user_id,
+      year,
+      month,
+      code,
+    ];
+
+    updatePromises.push(
+      new Promise((resolve, reject) => {
+        db.query(checkQuery, [user_id, year, month, code], (error, results) => {
+          if (error) {
+            return reject(error);
+          }
+          if (results.length > 0) {
+            // Report exists, update it
+            db.query(updateQuery, values, (updateError) => {
+              if (updateError) {
+                return reject(updateError);
+              }
+              resolve();
+            });
+          } else {
+            // Report does not exist, insert new
+            insertValues.push([
+              user_id || null,
+              code || null,
+              description || null,
+              solution || null,
+              activity_Type || null,
+              subsidiary || null,
+              Complementary_desc || null,
+              year,
+              month,
+              weekno1,
+              weekno2,
+              weekno3,
+              weekno4,
+              weekno5,
+              data1 || "",
+              data2 || "",
+              data3 || "",
+              data4 || "",
+              data5 || "",
+            ]);
+            resolve();
+          }
+        });
+      })
+    );
+  });
+
+  Promise.all(updatePromises)
+    .then(() => {
+      if (insertValues.length > 0) {
+        db.query(insertQuery, [insertValues], (insertError, results) => {
+          if (insertError) {
+            console.error("Error inserting data:", insertError);
+            return res
+              .status(500)
+              .json({ success: false, message: "Failed to save report" });
+          }
+          res.json({ success: true, message: "Report saved successfully!" });
+        });
+      } else {
+        res.json({ success: true, message: "Report updated successfully!" });
+      }
+    })
+    .catch((error) => {
+      console.error("Error saving report:", error);
+      res
+        .status(500)
+        .json({ success: false, message: "Failed to save report" });
+    });
+};
+
+exports.fetchWeeklyReportByUserYearMonth = (req, res) => {
+  const { user_id, year, month } = req.query;
+
+  if (!user_id || !year || !month) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Missing required parameters" });
+  }
+
+  const query = `
+    SELECT * FROM weekly_report
+    WHERE user_id = ? AND year = ? AND month = ?
+  `;
+
+  db.query(query, [user_id, year, month], (error, results) => {
     if (error) {
       console.error("Error fetching data:", error);
       return res
@@ -542,34 +637,3 @@ exports.fetchAllWeeklyReports = (req, res) => {
     res.json({ success: true, data: results });
   });
 };
-
-// exports.fetchAllWeeklyReports = (req, res) => {
-//   const { user_id, year, month } = req.body;
-
-//   // Check if user_id, year, and month are provided
-//   if (!user_id || !year || !month) {
-//     return res.status(400).json({
-//       success: false,
-//       message: "user_id, year, and month are required",
-//     });
-//   }
-
-//   const query = `
-//     SELECT * FROM weekly_report
-//     WHERE user_id = ? AND year = ? AND month = ?
-//   `;
-
-//   db.query(query, [user_id, year, month], (error, results) => {
-//     if (error) {
-//       console.error("Error fetching data:", error);
-//       return res.status(500).json({
-//         success: false,
-//         message: "Failed to fetch report data",
-//       });
-//     }
-//     res.json({
-//       success: true,
-//       data: results,
-//     });
-//   });
-// };
