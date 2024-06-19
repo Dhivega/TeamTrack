@@ -274,7 +274,7 @@ exports.getAllProjects = async (req, res) => {
 // Fetch all progress
 exports.getAllProgress = async (req, res) => {
   try {
-    const query = `SELECT * FROM projects`;
+    const query = `SELECT * FROM projects  WHERE code NOT IN ('DEV.H.01', 'DEV.I.01', 'DEV.I.02')`;
     const projects = await db.query(query);
 
     res.status(200).json({ success: true, data: projects });
