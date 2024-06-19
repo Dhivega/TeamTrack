@@ -41,14 +41,20 @@ document.getElementById("logIn").addEventListener("submit", async (event) => {
           console.log("Role ID:", user.role_id);
           window.localStorage.setItem("userID", user.user_id);
 
-          if (user.role_id === 2) {
+          if (user.role_id === 2 && user.status_id === 2) {
+            // console.log("Redirecting to /week");
+            window.location.href = `/login`;
+            alert("Inactive user"); //user page
+          } else if (user.role_id === 2 && user.status_id === 1) {
             console.log("Redirecting to /week");
-
             window.location.href = `/week`; //user page
-          } else if (user.role_id === 1) {
-            console.log("Redirecting to /demo");
-            window.location.href = `/demo`; //admin page
-
+          } else if (user.role_id === 1 && user.status_id === 2) {
+            // console.log("Redirecting to /admin ");
+            window.location.href = `/login`; //admin page
+            alert("Inactive user");
+          } else if (user.role_id === 1 && user.status_id === 1) {
+            console.log("Redirecting to /admin");
+            window.location.href = `/admin`; //admin page
           } else {
             console.log("Unknown user role:", user.role_id);
             alert("Unknown user role. Redirecting to unauthorized page.");
