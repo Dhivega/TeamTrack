@@ -168,7 +168,7 @@
               <div class="form-group">
                 <label for="editProjectsolution">Project Solution</label>
                 <select class="form-control" id="editProjectsolution">
-                  <option value="select solution">select solution</option>
+                  <option value="">select solution</option>
 
                     <option value="Audit">Audit</option>
                     <option value="Study">Study</option>
@@ -660,7 +660,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .then(response => response.json())
             .then(data => {
               if (data.success) {
-                alert('User deleted successfully');
+                alert('Project deleted successfully');
                 projects = projects.filter(project => project.Project_id != projectId);
                 displayProjects();
                 fetchProjects();
