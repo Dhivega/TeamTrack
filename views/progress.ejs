@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Progress</title>
-  <link rel="stylesheet" href="css/projects.css">
+  <link rel="stylesheet" href="css/demo.css">
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
   <link rel="icon" href="img/icon.jpg">
   <style>
@@ -62,21 +62,20 @@ table th {
       <img src="img/fives-logo-white3.png" alt="Your logo" height="50px" width="80px" id="top-left">
     </a>
   </div>
-  <nav class="logo" style="margin-top: -80px; margin-right: 60px">
-    <!-- <a href="/projects">Home</a> -->
+  <nav class="logo" style="margin-top:-80px; margin-right: 60px;">
     <a class="dropdown-toggle" type="text" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-      Home <span class="caret"></span>
+        Home <span class="caret"></span>
     </a>
-    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="margin-top:-1040px; margin-left: 1000px;">
-      <li><a class="dropdown-item" href="/admin">Users</a></li>
-      <li><a class="dropdown-item" href="/projects">Projects</a></li>
-      <li><a class="dropdown-item" href="/progress">Progress</a></li>
-      <li><a class="dropdown-item" href="/week">Report</a></li>
-
+    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="margin-top:-630px; margin-left: 1000px;">
+        <li><a class="dropdown-item" href="/admin">Users</a></li>
+        <li><a class="dropdown-item" href="/projects">Projects</a></li>
+        <li><a class="dropdown-item" href="/progress">Progress</a></li>
+        <li><a class="dropdown-item" href="/week">Report</a></li>
     </ul>
+
     <!-- <a href="">MyProfile</a> -->
-    <a href="/login" id="logout-link">Logout</a>
-  </nav>
+    <a href="/login">Logout</a>
+</nav>
   <center> <h4 style="margin-right:0px;margin-top:-50px; color: white;">ADMINISTRATOR</h4></center>
 </header>
 <div class="container">
@@ -212,7 +211,7 @@ document.addEventListener("DOMContentLoaded", function() {
   let editRow = null;
   let projects = [];
   let currentPage = 1;
-  const rowsPerPage = 3;
+  const rowsPerPage = 5;
 
   function clearForm() {
     projectForm.reset();
@@ -243,11 +242,11 @@ document.addEventListener("DOMContentLoaded", function() {
       past_two_weaks_review: document.getElementById("editProjectpast_two_weaks_review").value,
       coming_two_weaks_review: document.getElementById("editProjectComingReview").value,
       major_problem: document.getElementById("editProjectProblems").value,
-      Project_id: editRow ? editRow.dataset.id : null
+      project_id: editRow ? editRow.dataset.id : null
     };
 
     if (editRow) {
-      const index = projects.findIndex(p => p.Project_id === project.Project_id);
+      const index = projects.findIndex(p => p.project_id === project.project_id);
       if (index !== -1) {
         projects[index] = project;
         displayProjects();
@@ -317,7 +316,7 @@ document.addEventListener("DOMContentLoaded", function() {
       editModal.modal("show");
     } else if (e.target.classList.contains("delrow")) {
       const row = e.target.closest("tr");
-      const index = projects.findIndex(p => p.Project_id === row.dataset.id);
+      const index = projects.findIndex(p => p.project_id === row.dataset.id);
       if (index !== -1) {
         projects.splice(index, 1);
         displayProjects();
@@ -382,7 +381,7 @@ document.addEventListener("DOMContentLoaded", function() {
           <button class="btn btn-xs btn-info editrow">Edit</button>
         </td>
       `;
-      newRow.dataset.id = project.Project_id;
+      newRow.dataset.id = project.project_id;
       tbody.appendChild(newRow);
     }
 
@@ -395,7 +394,7 @@ document.addEventListener("DOMContentLoaded", function() {
       const option = this.textContent.toLowerCase();
       switch (option) {
         case 'users':
-          window.location.href = '/demo';
+          window.location.href = '/admin';
           break;
         case 'projects':
           window.location.href = '/projects';
@@ -411,3 +410,4 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 </script>
 </body>
+</html>
