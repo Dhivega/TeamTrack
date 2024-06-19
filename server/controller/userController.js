@@ -262,7 +262,7 @@ exports.deleteProject = async (req, res) => {
 // Fetch all projects
 exports.getAllProjects = async (req, res) => {
   try {
-    const query = `SELECT * FROM projects`;
+    const query = `SELECT * FROM projects  WHERE code NOT IN ('DEV.H.01', 'DEV.I.01', 'DEV.I.02')`;
     const projects = await db.query(query);
 
     res.status(200).json({ success: true, data: projects });
@@ -297,12 +297,12 @@ exports.updateProgress = async (req, res) => {
     past_two_weaks_review,
     coming_two_weaks_review,
     major_problem,
-    Project_id,
+    project_id,
   } = req.body;
   console.log(req.body);
 
   try {
-    const sql = `UPDATE projects SET code=?, Description=?, start_date=?, end_date=?, actual_step=?, critical=?, weather=?, past_two_weaks_review=?, coming_two_weaks_review=?, major_problem=? WHERE Project_id=?`;
+    const sql = `UPDATE projects SET code=?, Description=?, start_date=?, end_date=?, actual_step=?, critical=?, weather=?, past_two_weaks_review=?, coming_two_weaks_review=?, major_problem=? WHERE project_id=?`;
 
     const values = [
       code,
@@ -315,7 +315,7 @@ exports.updateProgress = async (req, res) => {
       past_two_weaks_review,
       coming_two_weaks_review,
       major_problem,
-      Project_id,
+      project_id,
     ];
 
     await db.query(sql, values);
@@ -405,7 +405,6 @@ exports.getProjects = (req, res) => {
 // fetch first 3 common rows which are not changing from project table
 
 exports.getreport = (req, res) => {
-  // console.log("res:" + res);
   const query =
     "SELECT code as code,Description as description,Solution as solution,activity_Type as activity_Type,subsidiary as subsidiary,Complementary_desc as Complementary_desc  FROM projects WHERE code IN ('DEV.H.01', 'DEV.I.01', 'DEV.I.02')";
 
@@ -432,7 +431,6 @@ exports.getProj = (req, res) => {
         .json({ success: false, message: "Failed to fetch user data" });
     }
     res.json({ success: true, data: results });
-    // console.log("res:" + results.code);
   });
 };
 
@@ -472,7 +470,7 @@ exports.saveReport = (req, res) => {
   `;
 
   const insertValues = [];
-  const updatePromises = [];
+  const updatevalue = [];
 
   reportData.forEach((row) => {
     const {
@@ -512,14 +510,13 @@ exports.saveReport = (req, res) => {
       code,
     ];
 
-    updatePromises.push(
+    updatevalue.push(
       new Promise((resolve, reject) => {
         db.query(checkQuery, [user_id, year, month, code], (error, results) => {
           if (error) {
             return reject(error);
           }
           if (results.length > 0) {
-            // Report exists, update it
             db.query(updateQuery, values, (updateError) => {
               if (updateError) {
                 return reject(updateError);
@@ -527,7 +524,6 @@ exports.saveReport = (req, res) => {
               resolve();
             });
           } else {
-            // Report does not exist, insert new
             insertValues.push([
               user_id || null,
               code || null,
@@ -556,7 +552,7 @@ exports.saveReport = (req, res) => {
     );
   });
 
-  Promise.all(updatePromises)
+  Promise.all(updatevalue)
     .then(() => {
       if (insertValues.length > 0) {
         db.query(insertQuery, [insertValues], (insertError, results) => {
