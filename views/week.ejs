@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,8 +9,6 @@
     <link rel="icon" href="img/icon.jpg">
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
-
-  
     <style>
         .filterable {
             margin-top: 15px;
@@ -34,29 +31,21 @@
             background-color: #af007c !important;
         }
     </style>
-    <link rel="stylesheet" href="css/week.css">
 </head>
 <header class="wrapper">
     <div>
-      <a href="your_homepage_url"
-        ><img
-          src="img/fives-logo-white3.png"
-          alt="Your logo"
-          height="50px"
-          width="80px"
-          id="top-left"
-      /></a>
+      <a href="your_homepage_url">
+        <img src="img/fives-logo-white3.png" alt="Your logo" height="50px" width="80px" id="top-left" />
+      </a>
     </div>
-    <nav class="logo" style="margin-left: 180px;">
-      <a href="/week">Home</a>
-      <!-- <a href="">Fives & Me</a> -->
-
-      <!-- <a href="/contacts">Contact</a> -->
-      <!-- <a href="https://fivesgroup.talent-soft.com/MyTalentsoft#/Me">Fives&Me</a> -->
-      <!-- <a href="">Profile</a> -->
-      <a href="/login" id="logout-link">Logout</a>
+    <nav class="logo" style="margin-left: 150px;">
+      <a href="/week" id="activityLink">Activity</a>
+      <a href="/demo" id="demoLink">Users</a>
+      <a href="/projects" id="projectLink">Projects</a>
+      <a href="/progress" id="progressLink">Progress</a>
+      <a href="/login" id="logoutLink">Logout</a>
     </nav>
-  </header>
+</header>
 <body>
     <div class="container">
         <div class="row clearfix">
@@ -68,7 +57,7 @@
                          <button id="add_project" class="btn btn-default pull-left" style="padding: 2px;margin-right: 10px;">Add Project</button>
                          <button id="save_report" class="btn btn-default pull-left" style="padding: 2px;margin-right:40px;" onclick="saveReport()">Save Report</button>
                             <label for="year" style="color: white;">Year:</label>
-                            <input type="number" id="year" min="1900" max="2100" value="2024" style="font-size: medium" name="year"; />
+                            <input type="number" id="year" min="1900" max="2100" value="2024" style="font-size: medium" name="year" />
                             <label for="month" style="color: white;">Month:</label>
                             <select id="month" name="month" style="padding: 5px">
                                 <option value="1">January</option>
@@ -86,25 +75,22 @@
                             </select>
                         </div>
                     </div>
-                    <!-- <form action="/save-report" id="savereport" method="post" > -->
                     <table class="table table-bordered table-hover" id="tab_logic">
                         <thead>
                             <tr class="filters">
-                                <th rowspan="2"><input type="text" class="form-control"  disabled />Code</th>
-                                <!-- <th rowspan="2"><input type="text" class="form-control" placeholder="Name" disabled /></th> -->
+                                <th rowspan="2"><input type="text" class="form-control" disabled />Code</th>
                                 <th rowspan="2"><input type="text" class="form-control" disabled />Description</th>
                                 <th rowspan="2"><input type="text" class="form-control" disabled />Solution</th>
                                 <th rowspan="2"><input type="text" class="form-control" disabled />Activity Type</th>
-                                <th rowspan="2"><input type="text" class="form-control"  disabled />Subsidiary</th>
+                                <th rowspan="2"><input type="text" class="form-control" disabled />Subsidiary</th>
                                 <th rowspan="2"><input type="text" class="form-control" disabled />Complementary description</th>
                                 <th id="weekcell1"><input type="text" style="width: 50px;"class="form-control" disabled /></th>
                                 <th id="weekcell2"><input type="text" style="width: 50px;"class="form-control" disabled /></th>
-                                <th id="weekcell3"><input type="text" style="width: 50px;"class="form-control"  disabled /></th>
-                                <th id="weekcell4"><input type="text" style="width: 50px;"class="form-control"  disabled /></th>
-                                <th id="weekcell5" ><input type="text" style="width: 50px;"class="form-control"  disabled /></th>
+                                <th id="weekcell3"><input type="text" style="width: 50px;"class="form-control" disabled /></th>
+                                <th id="weekcell4"><input type="text" style="width: 50px;"class="form-control" disabled /></th>
+                                <th id="weekcell5"><input type="text" style="width: 50px;"class="form-control" disabled /></th>
                             </tr>
                             <tr id="row2">
-                                
                                 <td><div id="week1From"></div><div id="week1To"></div></td>
                                 <td><div id="week2From"></div><div id="week2To"></div></td>
                                 <td><div id="week3From"></div><div id="week3To"></div></td>
@@ -113,40 +99,67 @@
                             </tr>
                         </thead>
                         <tbody>
-                            
-                        
                         </tbody>
-                       
-
-                        
-                    </form>
-                         
                     </table>
-                    </form>
                 </div>
             </div>
         </div>
-
     </div>
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            document.getElementById("logout-link").addEventListener("click", (event) => {
+            // Logout link handler
+            document.getElementById("logoutLink").addEventListener("click", (event) => {
                 event.preventDefault();
                 window.localStorage.removeItem("userID");
+                window.localStorage.removeItem("userRoleId");
                 window.location.href = event.target.href;
             });
+
+            // Function to update the navbar based on role ID
+            function updateNavbar(roleId) {
+                const activityLink = document.getElementById("activityLink");
+                const demoLink = document.getElementById("demoLink");
+                const projectLink = document.getElementById("projectLink");
+                const progressLink = document.getElementById("progressLink");
+
+                // Hide all links initially
+                activityLink.style.display = "none";
+                demoLink.style.display = "none";
+                projectLink.style.display = "none";
+                progressLink.style.display = "none";
+
+                // Show only the activity and logout links for users
+                if (roleId === 2) {
+                    activityLink.style.display = "block";
+
+                } 
+                // Show all links for admins
+                else if (roleId === 1) {
+                    activityLink.style.display = "block";
+                    demoLink.style.display = "block";
+                    projectLink.style.display = "block";
+                    progressLink.style.display = "block";
+                }
+                 else if (roleId===3){
+                    activityLink.style.display = "block";
+                    progressLink.style.display = "block";
+                }
+            }
+
+            // Check for stored user role and update the navbar on page load
+            const storedRoleId = localStorage.getItem("userRoleId");
+            if (storedRoleId) {
+                updateNavbar(parseInt(storedRoleId));
+            } else {
+                // Default behavior if no role ID is found
+                updateNavbar(2);  // Assuming 2 is the default role (user)
+            }
         });
     </script>
-    
-    
-
     <script src="js/week.js"></script>
 </body>
-    <footer>
-        <div id="copyright">&#169 ALL RIGHTS RESERVED</div>
-    </footer>
-    
-    
-
+<footer>
+    <div id="copyright">&#169 ALL RIGHTS RESERVED</div>
+</footer>
 </html>

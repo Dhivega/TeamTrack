@@ -106,7 +106,14 @@ exports.getAllUsers = (req, res) => {
     // Map status and role names
     results.forEach((element) => {
       element.statusName = element.status == 1 ? "Active" : "In Active";
-      element.roleName = element.role_id == 1 ? "admin" : "user";
+      // element.roleName = element.role_id == 1 ? "admin" : "user";
+      if (element.role_id == 1) {
+        element.roleName = "admin";
+      } else if (element.role_id == 2) {
+        element.roleName = "user";
+      } else if (element.role_id == 3) {
+        element.roleName = "PM";
+      }
     });
 
     res.json({ success: true, data: results });

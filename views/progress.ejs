@@ -64,18 +64,12 @@ table th {
   </div>
   <nav class="logo" style="margin-top: -80px; margin-right: 60px">
     <!-- <a href="/projects">Home</a> -->
-    <a class="dropdown-toggle" type="text" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-      Home <span class="caret"></span>
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="margin-top:-1040px; margin-left: 1000px;">
-      <li><a class="dropdown-item" href="/demo">Users</a></li>
-      <li><a class="dropdown-item" href="/projects">Projects</a></li>
-      <li><a class="dropdown-item" href="/progress">Progress</a></li>
-      <li><a class="dropdown-item" href="/week">Report</a></li>
+       <a href="/week" id="activityLink">Activity</a>
+      <a href="/demo" id="demoLink">Users</a>
+      <a href="/projects" id="projectLink">Projects</a>
+      <a href="/progress" id="progressLink">Progress</a>
 
-    </ul>
-    <!-- <a href="">MyProfile</a> -->
-    <a href="/login" id="logout-link">Logout</a>
+      <a href="/login" id="logout-link">Logout</a>
   </nav>
   <center> <h4 style="margin-right:0px;margin-top:-50px; color: white;">ADMINISTRATOR</h4></center>
 </header>
@@ -200,219 +194,56 @@ table th {
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script>
-
-document.addEventListener("DOMContentLoaded", () => {
-            document.getElementById("logout-link").addEventListener("click", (event) => {
+ document.addEventListener("DOMContentLoaded", () => {
+            // Logout link handler
+            document.getElementById("logoutLink").addEventListener("click", (event) => {
                 event.preventDefault();
                 window.localStorage.removeItem("userID");
+                window.localStorage.removeItem("userRoleId");
                 window.location.href = event.target.href;
             });
+
+            // Function to update the navbar based on role ID
+            function updateNavbar(roleId) {
+                const activityLink = document.getElementById("activityLink");
+                const demoLink = document.getElementById("demoLink");
+                const projectLink = document.getElementById("projectLink");
+                const progressLink = document.getElementById("progressLink");
+
+                // Hide all links initially
+                activityLink.style.display = "none";
+                demoLink.style.display = "none";
+                projectLink.style.display = "none";
+                progressLink.style.display = "none";
+
+                // Show only the activity and logout links for users
+                if (roleId === 2) {
+                    activityLink.style.display = "block";
+                } 
+                // Show all links for admins
+                else if (roleId === 1) {
+                    activityLink.style.display = "block";
+                    demoLink.style.display = "block";
+                    projectLink.style.display = "block";
+                    progressLink.style.display = "block";
+                }
+                else if (roleId===3){
+                    activityLink.style.display = "block";
+                    progressLink.style.display = "block";
+                    
+                }
+            }
+
+            // Check for stored user role and update the navbar on page load
+            const storedRoleId = localStorage.getItem("userRoleId");
+            if (storedRoleId) {
+                updateNavbar(parseInt(storedRoleId));
+            } else {
+                // Default behavior if no role ID is found
+                updateNavbar(2);  // Assuming 2 is the default role (user)
+            }
         });
-document.addEventListener("DOMContentLoaded", function() {
-  const addProjectButton = document.getElementById("add_project");
-  const saveChangesButton = document.getElementById("saveChanges");
-  const editModal = $("#editModal");
-  const projectForm = document.getElementById("projectForm");
-  let editRow = null;
-  let projects = [];
-  let currentPage = 1;
-  const rowsPerPage = 3;
-
-  function clearForm() {
-    projectForm.reset();
-  }
-
-  function addNewRow(project) {
-    projects.push(project);
-    displayProjects();
-  }
-
-  addProjectButton.addEventListener("click", function() {
-    clearForm();
-    editRow = null;
-    editModal.modal("show");
-  });
-
-  fetchProgress();
-
-  saveChangesButton.addEventListener("click", function() {
-    const project = {
-      code: document.getElementById("editProjectCode").value,
-      Description: document.getElementById("editProjectDescription").value,
-      start_date: document.getElementById("editProjectstart_date").value,
-      end_date: document.getElementById("editProjectend_date").value,
-      actual_step: document.getElementById("editProjectactual_step").value,
-      critical: document.getElementById("editProjectCritical").value,
-      weather: document.getElementById("editProjectWeather").value,
-      past_two_weaks_review: document.getElementById("editProjectpast_two_weaks_review").value,
-      coming_two_weaks_review: document.getElementById("editProjectComingReview").value,
-      major_problem: document.getElementById("editProjectProblems").value,
-      Project_id: editRow ? editRow.dataset.id : null
-    };
-
-    if (editRow) {
-      const index = projects.findIndex(p => p.Project_id === project.Project_id);
-      if (index !== -1) {
-        projects[index] = project;
-        displayProjects();
-        fetchProgress();
-      }
-
-      fetch('/update-progress', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(project),
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          alert("Progress updated succesfully")
-          console.log('Progress updated successfully:', data.message);
-        } else {
-          console.error('Error updating project:', data.message);
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
-
-    } else {
-      addNewRow(project);
-
-      fetch('/add-progress', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(project),
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          console.log('Project added successfully:', data.message);
-        } else {
-          console.error('Error adding project:', data.message);
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
-    }
-
-    editModal.modal("hide");
-  });
-
-  document.querySelector("#tab_logic tbody").addEventListener("click", function(e) {
-    if (e.target.classList.contains("editrow")) {
-      editRow = e.target.closest("tr");
-      const cells = editRow.children;
-      document.getElementById("editProjectCode").value = cells[0].textContent;
-      document.getElementById("editProjectDescription").value = cells[1].textContent;
-      document.getElementById("editProjectstart_date").value = cells[2].textContent;
-      document.getElementById("editProjectend_date").value = cells[3].textContent;
-      document.getElementById("editProjectactual_step").value = cells[4].textContent;
-      document.getElementById("editProjectCritical").value = cells[5].textContent;
-      document.getElementById("editProjectWeather").value = cells[6].textContent;
-      document.getElementById("editProjectpast_two_weaks_review").value = cells[7].textContent;
-      document.getElementById("editProjectComingReview").value = cells[8].textContent;
-      document.getElementById("editProjectProblems").value = cells[9].textContent;
-      editModal.modal("show");
-    } else if (e.target.classList.contains("delrow")) {
-      const row = e.target.closest("tr");
-      const index = projects.findIndex(p => p.Project_id === row.dataset.id);
-      if (index !== -1) {
-        projects.splice(index, 1);
-        displayProjects();
-        fetchProgress();
-      }
-    }
-  });
-
-  document.getElementById("prevPage").addEventListener("click", function() {
-    if (currentPage > 1) {
-      currentPage--;
-      displayProjects();
-      fetchProgress();
-    }
-  });
-
-  document.getElementById("nextPage").addEventListener("click", function() {
-    if (currentPage * rowsPerPage < projects.length) {
-      currentPage++;
-      displayProjects();
-      fetchProgress();
-    }
-  });
-
-  function fetchProgress() {
-    fetch('/progress-data')
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          projects = data.data;
-          displayProjects();
-        } else {
-          console.error('Error fetching projects:', data.message);
-        }
-      })
-      .catch(error => {
-        console.error('Error fetching projects:', error);
-      });
-  }
-
-  function displayProjects() {
-    const tbody = document.querySelector("#tab_logic tbody");
-    tbody.innerHTML = '';
-    const start = (currentPage - 1) * rowsPerPage;
-    const end = Math.min(start + rowsPerPage, projects.length);
-
-    for (let i = start; i < end; i++) {
-      const project = projects[i];
-      const newRow = document.createElement("tr");
-      newRow.innerHTML = `
-        <td>${project.code}</td>
-        <td>${project.Description}</td>
-        <td>${project.start_date}</td>
-        <td>${project.end_date}</td>
-        <td>${project.actual_step}</td>
-        <td>${project.critical}</td>
-        <td>${project.weather}</td>
-        <td>${project.past_two_weaks_review}</td>
-        <td>${project.coming_two_weaks_review}</td>
-        <td>${project.major_problem}</td>
-        <td>
-          <button class="btn btn-xs btn-info editrow">Edit</button>
-        </td>
-      `;
-      newRow.dataset.id = project.Project_id;
-      tbody.appendChild(newRow);
-    }
-
-    document.getElementById("prevPage").disabled = currentPage === 1;
-    document.getElementById("nextPage").disabled = end >= projects.length;
-  }
-
-  document.querySelectorAll('.dropdown-item').forEach(item => {
-    item.addEventListener('click', function() {
-      const option = this.textContent.toLowerCase();
-      switch (option) {
-        case 'users':
-          window.location.href = '/demo';
-          break;
-        case 'projects':
-          window.location.href = '/projects';
-          break;
-        case 'progress':
-          window.location.href = '/progress';
-          break;
-        default:
-          break;
-      }
-    });
-  });
-});
 </script>
+<script src="js/progress.js"></script>
 </body>
 </html>
