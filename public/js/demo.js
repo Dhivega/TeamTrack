@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 document.addEventListener("DOMContentLoaded", function () {
   let currentPage = 1;
-  const rowsPerPage = 4;
+  const rowsPerPage = 10;
   let usersData = [];
   let userIdToDelete = null; // Store the user ID to delete
 
@@ -35,13 +35,14 @@ document.addEventListener("DOMContentLoaded", function () {
         if (data.success) {
           usersData = data.data;
           displayUsers();
+          populateManagerDropdown();
         } else {
           showAlert("Failed to fetch user data");
         }
       })
       .catch((error) => {
         console.error("Error fetching user data:", error);
-        showAlert("Error fetching user data");
+        // showAlert("Error fetching user data");
       });
   }
 
@@ -68,7 +69,17 @@ document.addEventListener("DOMContentLoaded", function () {
 </tr>`;
       tbody.insertAdjacentHTML("beforeend", row);
     }
-
+    function populateManagerDropdown() {
+      const managerSelect = document.querySelector("#editUserManager");
+      managerSelect.innerHTML = "";
+      usersData.forEach((user) => {
+        const option = document.createElement("option");
+        option.value = user.name;
+        option.textContent = user.name;
+        managerSelect.appendChild(option);
+      });
+    }
+    populateManagerDropdown();
     // Update pagination controls
     document
       .getElementById("prevPage")

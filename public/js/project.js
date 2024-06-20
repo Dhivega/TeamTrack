@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
   let editRow = null;
   let projects = [];
   let currentPage = 1;
-  const rowsPerPage = 3;
+  const rowsPerPage = 10;
 
   function clearForm() {
     projectForm.reset();
@@ -240,5 +240,75 @@ document.addEventListener("DOMContentLoaded", function () {
       .catch((error) => {
         console.error("Error fetching projects:", error);
       });
+  }
+});
+
+document.querySelector(".btn-filter").addEventListener("click", function () {
+  const panel = this.closest(".filterable");
+  const filters = panel.querySelectorAll(".filters input");
+  const tbody = panel.querySelector(".table tbody");
+  if (filters[0].disabled) {
+    filters.forEach((filter) => {
+      filter.disabled = false;
+    });
+    filters.forEach((filter) => {
+      filter.focus();
+    });
+  } else {
+    filters.forEach((filter) => {
+      filter.value = "";
+      filter.disabled = true;
+    });
+    const noResult = tbody.querySelector(".no-result");
+    if (noResult) {
+      noResult.remove();
+    }
+    tbody.querySelectorAll("tr").forEach((row) => {
+      row.style.display = "";
+    });
+  }
+});
+
+document.querySelectorAll(".filterable .filters input").forEach((input) => {
+  input.addEventListener("keyup", function (e) {
+    if (e.key === "Tab") return;
+
+    const inputContent = input.value.toLowerCase();
+    const panel = input.closest(".filterable");
+    const columnIndex = Array.from(
+      panel.querySelectorAll(".filters th")
+    ).indexOf(input.closest("th"));
+    const table = panel.querySelector(".table");
+    const rows = table.querySelectorAll("tbody tr");
+
+    rows.forEach((row) => {
+      const cell = row.querySelectorAll("td")[columnIndex];
+      if (cell && cell.textContent.toLowerCase().indexOf(inputContent) === -1) {
+        row.style.display = "none";
+      } else {
+        row.style.display = "";
+      }
+    });
+
+    const noResult = table.querySelector("tbody .no-result");
+    if (noResult) {
+      noResult.remove();
+    }
+    if (Array.from(rows).every((row) => row.style.display === "none")) {
+      const noResultRow = document.createElement("tr");
+      noResultRow.className = "no-result text-center";
+      const noResultCell = document.createElement("td");
+      noResultCell.colSpan = panel.querySelectorAll(".filters th").length;
+      noResultCell.textContent = "No result found";
+      noResultRow.appendChild(noResultCell);
+      table.querySelector("tbody").appendChild(noResultRow);
+    }
+  });
+});
+
+document.getElementById("confirmDelete").addEventListener("click", function () {
+  if (userIdToDelete) {
+    deleteUser(userIdToDelete);
+    $("#confirmModal").modal("hide");
   }
 });
