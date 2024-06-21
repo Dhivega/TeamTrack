@@ -56,11 +56,6 @@ router.get("/projects-data", userController.getAllProjects);
 
 router.get("/progress-data", userController.getAllProgress);
 router.put("/update-progress", userController.updateProgress);
-router.post("/add-progress", userController.addprogress);
-
-router.get("/users-data", userController.getUsers);
-
-router.get("/projects-data", userController.getProjects);
 
 router.get("/report-data", userController.getreport);
 

@@ -30,6 +30,13 @@
         .panel-heading {
             background-color: #af007c !important;
         }
+        #welcomeMessage{
+           color: white;
+           
+            padding-right: 100px;
+           margin-left: -10%; 
+           padding-top: 20px; 
+        }
     </style>
 </head>
 <header class="wrapper">
@@ -38,6 +45,8 @@
         <img src="img/fives-logo-white3.png" alt="Your logo" height="50px" width="80px" id="top-left" />
       </a>
     </div>
+    <!-- <h6 id="welcomeMessage" ></h6> -->
+
     <nav class="logo" style="margin-left: 150px;">
       <a href="/week" id="activityLink">Activity</a>
       <a href="/demo" id="demoLink">Users</a>
@@ -45,6 +54,7 @@
       <a href="/progress" id="progressLink">Progress</a>
       <a href="/login" id="logoutLink">Logout</a>
     </nav>
+
 </header>
 <body>
     <div class="container">
@@ -113,6 +123,8 @@
                 event.preventDefault();
                 window.localStorage.removeItem("userID");
                 window.localStorage.removeItem("userRoleId");
+                window.localStorage.removeItem("userName");
+
                 window.location.href = event.target.href;
             });
 
@@ -146,7 +158,7 @@
                     progressLink.style.display = "block";
                 }
             }
-
+        
             // Check for stored user role and update the navbar on page load
             const storedRoleId = localStorage.getItem("userRoleId");
             if (storedRoleId) {
@@ -155,6 +167,16 @@
                 // Default behavior if no role ID is found
                 updateNavbar(1);  // Assuming 2 is the default role (user)
             }
+            const storedUserName = localStorage.getItem("userName");
+            console.log(storedUserName);
+
+            if (storedUserName) {
+           const welcomeMessage = document.getElementById('welcomeMessage');
+           welcomeMessage.innerHTML = `<h4 style="margin-right:-20px;margin-top:-1px;">Welcome ${storedUserName}</h4>`;
+           } else {
+            console.error('Username not found'); // Handle case where username is not available
+              }
+
         });
     </script>
     <script src="js/week.js"></script>

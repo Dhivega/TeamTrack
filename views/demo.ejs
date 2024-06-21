@@ -9,6 +9,18 @@
     <link rel="icon" href="img/icon.jpg">
  
     <style>
+             table td {
+  word-wrap: break-word;
+  white-space: normal;  
+  overflow: hidden;     
+  text-overflow: ellipsis; 
+  max-width: 100px;   
+} 
+
+table th {
+  max-width: 100px; 
+} 
+
         .filterable { margin-top: 15px; }
         .filterable .panel-heading .pull-right { margin-top: -20px; }
         .filterable .filters input[disabled] {
@@ -21,7 +33,7 @@
         }
         .filterable .filters input[disabled]::placeholder { color: #333; }
  
-        .pagination {
+        /* .pagination {
         display: flex;
         justify-content: center;
         margin-top: 20px;
@@ -36,7 +48,45 @@
       .pagination button.active {
         background-color: #af007c;
         color: white;
-      }
+      } */
+       .pagination a {
+  /* display: inline-block; */
+  margin: 1px;
+  padding: 10px;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+  text-decoration: none;
+  color: #333;
+  background-color: #f1f1f1;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.pagination a:hover {
+  background-color: #af007c;
+  color: white;
+}
+
+.pagination a.active {
+  background-color: #af007c;
+  color: white;
+  font-weight: bold;
+}
+
+.pagination a.prev, .pagination a.next {
+  border-radius: 0;
+  width:10px;
+  padding: 10px 15px;
+}
+
+.pagination {
+  text-align: center;
+  margin-top: 20px;
+}
+
     </style>
 </head>
 <body>
@@ -55,7 +105,7 @@
           <a href="/login" id="logout-link">Logout</a>
 
         </nav>
-    <center> <h4 style="margin-right:0px;margin-top:-50px; color: white;">ADMINISTRATOR</h4></center>
+    <!-- <center> <h4 style="margin-right:0px;margin-top:-50px; color: white;">ADMINISTRATOR</h4></center> -->
  
     </header>
     <div class="container">
@@ -77,6 +127,7 @@
                                 <th><input type="text" class="form-control" placeholder="User ID" disabled name="user_id" /></th>
                                 <th><input type="text" class="form-control" placeholder="User Name" disabled name="name"/></th>
                                 <th><input type="email" class="form-control" placeholder="E Mail" disabled name="email"/></th>
+                                <th><input type="password" class="form-control" placeholder="Password" disabled name="Password"/></th>
                                 <th><input type="text" class="form-control" placeholder="Designation" disabled name="Designation"/></th>
                                 <th><input type="text" class="form-control" placeholder="Manager" disabled name="Manager"/></th>
                                 <th><input type="text" class="form-control" placeholder="Status" disabled name="status" /></th>
@@ -88,6 +139,7 @@
                         </tbody>
                     </table>
                     <!-- Pagination controls -->
+                     
                    
                 </div>
             </div>
@@ -96,12 +148,16 @@
  
    
    
-    <center>
+    <!-- <center>
  
     <div class="pagination">
         <button id="prevPage" style="padding: 7px;">Previous</button>
         <button id="nextPage"style="padding: 7px;">Next</button>
-      </div></center>
+      </div></center> -->
+     <center> <div class="pagination" id="paginationLinks">
+        <!-- Numbered links will be dynamically inserted here -->
+    </div></center>
+    
     <footer>
         <div id="copyright">&#169 ALL RIGHTS RESERVED</div>
     </footer>
@@ -126,6 +182,10 @@
                         <div class="form-group">
                             <label for="editUserEmail">Email</label>
                             <input type="email" class="form-control" id="editUserEmail" name="email">
+                        </div>
+                        <div class="form-group">
+                            <label for="editUserPwd">password</label>
+                            <input type="password" class="form-control" id="editUserPwd" name="email">
                         </div>
                         <div class="form-group">
                             <label for="editUserDesignation">Designation</label>
