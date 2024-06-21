@@ -67,7 +67,7 @@
 
       <a href="/login" id="logout-link">Logout</a>
     </nav>
-    <center> <h4 style="margin-right:0px;margin-top:-50px; color: white;">ADMINISTRATOR</h4></center>
+    <!-- <center> <h4 style="margin-right:0px;margin-top:-50px; color: white;">ADMINISTRATOR</h4></center> -->
   </header>
   <body>
     <div class="container">
@@ -446,12 +446,12 @@
                 />
               </div>
               <div class="form-group">
-                <label for="editProjectManager">Project Manager</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="editProjectManager"
-                />
+                <label for="Project_manager">Project Manager:</label>
+                <select id="Project_manager" name="Project_manager" required>
+                    <% managerNames.forEach(manager => { %>
+                        <option value="<%= manager %>"><%= manager %></option>
+                    <% }); %>
+                </select><br><br>
               </div>
             </form>
           </div>

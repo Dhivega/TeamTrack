@@ -64,7 +64,7 @@ router.get("/projects-data", userController.getProjects);
 
 router.get("/report-data", userController.getreport);
 
-router.get("/proj-data", userController.getProj);
+// router.get("/proj-data", userController.getProj);
 
 router.post("/save-report", userController.saveReport);
 router.get("/get-report", userController.fetchWeeklyReportByUserYearMonth);

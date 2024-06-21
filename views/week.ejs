@@ -171,16 +171,7 @@
       progressLink.style.display = "block";
     }
   }
-  const storedUserName = localStorage.getItem("userName");
-            console.log(storedUserName);
- 
-            if (storedUserName) {
-           const welcomeMessage = document.getElementById('welcomeMessage');
-           welcomeMessage.innerHTML = `<h4 style="margin-right:-20px;margin-top:-1px">Welcome ${storedUserName}</h4>`;
-           } else {
-            console.error('Username not found'); // Handle case where username is not available
-              }
-
+  
   // Check for stored user role and update the navbar on page load
   const storedRoleId = localStorage.getItem("userRoleId");
   if (storedRoleId) {
@@ -189,6 +180,16 @@
     // Default behavior if no role ID is found
     updateNavbar(1); // Assuming 2 is the default role (user)
   }
+//   const storedUserName = localStorage.getItem("userName");
+//             console.log(storedUserName);
+ 
+//             if (storedUserName) {
+//            const welcomeMessage = document.getElementById('welcomeMessage');
+//            welcomeMessage.innerHTML = `<h4 style="margin-right:-20px;margin-top:-1px">Welcome ${storedUserName}</h4>`;
+//            } else {
+//             console.error('Username not found'); // Handle case where username is not available
+//               }
+
 });
     </script>
     

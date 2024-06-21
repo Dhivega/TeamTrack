@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", function () {
       managerSelect.innerHTML = "";
       usersData.forEach((user) => {
         const option = document.createElement("option");
-        option.value = user.name;
+        option.value = user.user_id;
         option.textContent = user.name;
         managerSelect.appendChild(option);
       });
