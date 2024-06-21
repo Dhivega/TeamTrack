@@ -187,20 +187,20 @@ document.addEventListener("DOMContentLoaded", function () {
       const project = projects[i];
       const newRow = document.createElement("tr");
       newRow.innerHTML = `
-        <td>${project.code}</td>
-        <td>${project.Description}</td>
-        <td>${project.start_date}</td>
-        <td>${project.end_date}</td>
-        <td>${project.actual_step}</td>
-        <td>${project.critical}</td>
-        <td>${project.weather}</td>
-        <td>${project.past_two_weaks_review}</td>
-        <td>${project.coming_two_weaks_review}</td>
-        <td>${project.major_problem}</td>
-        <td>
-          <button class="btn btn-xs btn-info editrow">Edit</button>
-        </td>
-      `;
+<td>${project.code}</td>
+<td>${project.Description}</td>
+<td>${project.start_date}</td>
+<td>${project.end_date}</td>
+<td>${project.actual_step}</td>
+<td>${project.critical}</td>
+<td>${project.weather}</td>
+<td>${project.past_two_weaks_review}</td>
+<td>${project.coming_two_weaks_review}</td>
+<td>${project.major_problem}</td>
+<td>
+  <button class="btn btn-xs btn-info editrow">Edit</button>
+</td>
+`;
       newRow.dataset.id = project.Project_id;
       tbody.appendChild(newRow);
     }

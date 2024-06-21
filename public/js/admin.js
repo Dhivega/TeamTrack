@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 document.addEventListener("DOMContentLoaded", function () {
   let currentPage = 1;
-  const rowsPerPage = 4;
+  const rowsPerPage = 10;
   let usersData = [];
   let userIdToDelete = null;
 
@@ -34,13 +34,14 @@ document.addEventListener("DOMContentLoaded", function () {
         if (data.success) {
           usersData = data.data;
           displayUsers();
+          populateManagerDropdown();
         } else {
           showAlert("Failed to fetch user data");
         }
       })
       .catch((error) => {
         console.error("Error fetching user data:", error);
-        showAlert("Error fetching user data");
+        // showAlert("Error fetching user data");
       });
   }
 
@@ -56,17 +57,32 @@ document.addEventListener("DOMContentLoaded", function () {
             <td>${user.user_id}</td>
             <td>${user.name}</td>
             <td>${user.mail}</td>
-            <td>${user.Designation}</td>
-            <td>${user.Manager}</td>
+            <td>${user.Designation || ""}</td>
+            <td>${user.Manager || ""}</td>
             <td>${user.statusName}</td>
             <td>${user.roleName}</td>
             <td>
-                <button class="btn btn-xs btn-info editUser" data-id="${user.user_id}">Edit</button>
-                <button class="btn btn-xs btn-danger deleteUser" data-id="${user.user_id}">Delete</button>
+                <button class="btn btn-xs btn-info editUser" data-id="${
+                  user.user_id
+                }">Edit</button>
+                <button class="btn btn-xs btn-danger deleteUser" data-id="${
+                  user.user_id
+                }">Delete</button>
             </td>
         </tr>`;
       tbody.insertAdjacentHTML("beforeend", row);
     }
+    function populateManagerDropdown() {
+      const managerSelect = document.querySelector("#editUserManager");
+      managerSelect.innerHTML = "";
+      usersData.forEach((user) => {
+        const option = document.createElement("option");
+        option.value = user.name;
+        option.textContent = user.name;
+        managerSelect.appendChild(option);
+      });
+    }
+    populateManagerDropdown();
 
     // Update pagination controls
     document
@@ -79,8 +95,8 @@ document.addEventListener("DOMContentLoaded", function () {
     addEditDeleteEventListeners();
   }
 
-  function deleteUser(userId) {
-    fetch("/users/" + userId, {
+  function deleteUser(user_id) {
+    fetch(`/users/${user_id}`, {
       method: "DELETE",
     })
       .then((response) => {

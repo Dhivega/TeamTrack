@@ -33,6 +33,10 @@
         .panel-heading {
             background-color: #af007c !important;
         }
+        #welcomeMessage{
+           color: white;
+           
+        }
     </style>
     <link rel="stylesheet" href="css/week.css">
 </head>
@@ -47,13 +51,13 @@
           id="top-left"
       /></a>
     </div>
+    <!-- <h6 id="welcomeMessage"></h6> -->
     <nav class="logo" style="margin-left: 180px;">
-      <a href="/week">Home</a>
-      <!-- <a href="">Fives & Me</a> -->
-
-      <!-- <a href="/contacts">Contact</a> -->
-      <!-- <a href="https://fivesgroup.talent-soft.com/MyTalentsoft#/Me">Fives&Me</a> -->
-      <!-- <a href="">Profile</a> -->
+      <a href="/week" id="activityLink">Activity</a>
+      <a href="/admin" id="adminLink">Users</a>
+      <a href="/projects" id="projectLink">Projects</a>
+      <a href="/progress" id="progressLink">Progress</a>
+     
       <a href="/login" id="logout-link">Logout</a>
     </nav>
   </header>
@@ -134,9 +138,58 @@
             document.getElementById("logout-link").addEventListener("click", (event) => {
                 event.preventDefault();
                 window.localStorage.removeItem("userID");
+                window.localStorage.removeItem("userEmail");
+                window.localStorage.removeItem("userRoleId");
+                window.localStorage.removeItem("userName");
                 window.location.href = event.target.href;
             });
-        });
+      
+        function updateNavbar(roleId) {
+    const activityLink = document.getElementById("activityLink");
+    const adminLink = document.getElementById("adminLink");
+    const projectLink = document.getElementById("projectLink");
+    const progressLink = document.getElementById("progressLink");
+
+    // Hide all links initially
+    activityLink.style.display = "none";
+    adminLink.style.display = "none";
+    projectLink.style.display = "none";
+    progressLink.style.display = "none";
+
+    // Show only the activity and logout links for users
+    if (roleId === 2) {
+      activityLink.style.display = "block";
+    }
+    // Show all links for admins
+    else if (roleId === 1) {
+      activityLink.style.display = "block";
+      adminLink.style.display = "block";
+      projectLink.style.display = "block";
+      progressLink.style.display = "block";
+    } else if (roleId === 3) {
+      activityLink.style.display = "block";
+      progressLink.style.display = "block";
+    }
+  }
+  const storedUserName = localStorage.getItem("userName");
+            console.log(storedUserName);
+ 
+            if (storedUserName) {
+           const welcomeMessage = document.getElementById('welcomeMessage');
+           welcomeMessage.innerHTML = `<h4 style="margin-right:-20px;margin-top:-1px">Welcome ${storedUserName}</h4>`;
+           } else {
+            console.error('Username not found'); // Handle case where username is not available
+              }
+
+  // Check for stored user role and update the navbar on page load
+  const storedRoleId = localStorage.getItem("userRoleId");
+  if (storedRoleId) {
+    updateNavbar(parseInt(storedRoleId));
+  } else {
+    // Default behavior if no role ID is found
+    updateNavbar(1); // Assuming 2 is the default role (user)
+  }
+});
     </script>
     
     

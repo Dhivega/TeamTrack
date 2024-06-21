@@ -106,7 +106,14 @@ exports.getAllUsers = (req, res) => {
     // Map status and role names
     results.forEach((element) => {
       element.statusName = element.status == 1 ? "Active" : "In Active";
-      element.roleName = element.role_id == 1 ? "admin" : "user";
+      // element.roleName = element.role_id == 1 ? "admin" : "user";
+      if (element.role_id == 1) {
+        element.roleName = "admin";
+      } else if (element.role_id == 2) {
+        element.roleName = "user";
+      } else if (element.role_id == 3) {
+        element.roleName = "PM";
+      }
     });
 
     res.json({ success: true, data: results });
@@ -274,7 +281,7 @@ exports.getAllProjects = async (req, res) => {
 // Fetch all progress
 exports.getAllProgress = async (req, res) => {
   try {
-    const query = `SELECT * FROM projects`;
+    const query = `SELECT * FROM projects  WHERE code NOT IN ('DEV.H.01', 'DEV.I.01', 'DEV.I.02')`;
     const projects = await db.query(query);
 
     res.status(200).json({ success: true, data: projects });
@@ -297,12 +304,12 @@ exports.updateProgress = async (req, res) => {
     past_two_weaks_review,
     coming_two_weaks_review,
     major_problem,
-    project_id,
+    Project_id,
   } = req.body;
   console.log(req.body);
 
   try {
-    const sql = `UPDATE projects SET code=?, Description=?, start_date=?, end_date=?, actual_step=?, critical=?, weather=?, past_two_weaks_review=?, coming_two_weaks_review=?, major_problem=? WHERE project_id=?`;
+    const sql = `UPDATE projects SET code=?, Description=?, start_date=?, end_date=?, actual_step=?, critical=?, weather=?, past_two_weaks_review=?, coming_two_weaks_review=?, major_problem=? WHERE Project_id=?`;
 
     const values = [
       code,
@@ -315,7 +322,7 @@ exports.updateProgress = async (req, res) => {
       past_two_weaks_review,
       coming_two_weaks_review,
       major_problem,
-      project_id,
+      Project_id,
     ];
 
     await db.query(sql, values);
@@ -330,45 +337,45 @@ exports.updateProgress = async (req, res) => {
 };
 
 // Add a new project
-// exports.addprogress = async (req, res) => {
-//   const {
-//     code,
-//     Description,
-//     start_date,
-//     end_date,
-//     actual_step,
-//     critical,
-//     weather,
-//     past_two_weaks_review,
-//     coming_two_weaks_review,
-//     major_problem,
-//   } = req.body;
+exports.addprogress = async (req, res) => {
+  const {
+    code,
+    Description,
+    start_date,
+    end_date,
+    actual_step,
+    critical,
+    weather,
+    past_two_weaks_review,
+    coming_two_weaks_review,
+    major_problem,
+  } = req.body;
 
-//   try {
-//     const sql = `INSERT INTO projects (code, Description, start_date, end_date, actual_step, critical,weather,past_two_weaks_review,coming_two_weaks_review,major_problem) VALUES (?, ?, ?, ?, ?, ?,?,?,?,?)`;
-//     const values = [
-//       code,
-//       Description,
-//       start_date,
-//       end_date,
-//       actual_step,
-//       critical,
-//       weather,
-//       past_two_weaks_review,
-//       coming_two_weaks_review,
-//       major_problem,
-//     ];
+  try {
+    const sql = `INSERT INTO projects (code, Description, start_date, end_date, actual_step, critical,weather,past_two_weaks_review,coming_two_weaks_review,major_problem) VALUES (?, ?, ?, ?, ?, ?,?,?,?,?)`;
+    const values = [
+      code,
+      Description,
+      start_date,
+      end_date,
+      actual_step,
+      critical,
+      weather,
+      past_two_weaks_review,
+      coming_two_weaks_review,
+      major_problem,
+    ];
 
-//     await db.query(sql, values);
+    await db.query(sql, values);
 
-//     res
-//       .status(201)
-//       .json({ success: true, message: "Project added successfully" });
-//   } catch (error) {
-//     console.error("Error adding project:", error);
-//     res.status(500).json({ success: false, message: "Internal Server Error" });
-//   }
-// };
+    res
+      .status(201)
+      .json({ success: true, message: "Project added successfully" });
+  } catch (error) {
+    console.error("Error adding project:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
 
 exports.getUsers = (req, res) => {
   const query =

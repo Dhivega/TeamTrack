@@ -107,3 +107,32 @@
   margin-bottom: -15%;
   color: #495057;
 }
+.btnRegister:enabled {
+  background-color: #af007c; /* Example of new color when enabled */
+}
+
+.btnRegister:disabled {
+  background-color: #c85cab; /* Example of new color when enabled */
+}
+Default style
+/* .form-control {
+  border: 1px solid #ccc;
+  transition: border-color 0.3s;
+} */
+
+/* Focused style */
+/* .form-control:focus {
+  border-color: #5cb85c;
+  outline: none;
+} */
+
+/* Matching style */
+/* .form-control.matching {
+  border: 3px solid green;
+} */
+
+/* Not matching style */
+/* .form-control.not-matching {
+  border-color: red;
+} */
+
