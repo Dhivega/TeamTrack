@@ -9,7 +9,6 @@ exports.reg = async (req, res) => {
     req.body;
 
   try {
-    // Check if user already exists
     const existingUser = await db.query(
       "SELECT * FROM employees WHERE email = ?",
       [email]
@@ -21,10 +20,8 @@ exports.reg = async (req, res) => {
         .json({ success: false, message: "Account already exists" });
     }
 
-    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10); // 10 is the salt rounds
 
-    // Insert the user into the database
     const sql = `
       INSERT INTO employees (firstname, lastname, email, ph_no, password, Designation, Address)
       VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -56,7 +53,6 @@ exports.log = async (req, res) => {
   const { email, password, fname } = req.body;
 
   try {
-    // Fetch user data from MySQL database
     const results = await db.query("SELECT * FROM employees WHERE email = ?", [
       email,
     ]);
@@ -64,7 +60,6 @@ exports.log = async (req, res) => {
     if (results.length > 0) {
       const user = results[0];
 
-      // Validate password
       const isMatch = await bcrypt.compare(password, user.password);
       if (isMatch) {
         console.log("User data verified successfully");
@@ -102,7 +97,6 @@ exports.getAllUsers = (req, res) => {
     }
     results.forEach((element) => {
       element.statusName = element.status == 1 ? "Active" : "In Active";
-      // element.roleName = element.role_id == 1 ? "admin" : "user";
       if (element.role_id == 1) {
         element.roleName = "admin";
       } else if (element.role_id == 2) {
@@ -116,62 +110,11 @@ exports.getAllUsers = (req, res) => {
   });
 };
 
-// // Add a new user
-// exports.addUser = (req, res) => {
-//   const {
-//     user_id,
-//     name,
-//     mail,
-//     password,
-//     Designation,
-//     Manager,
-//     status,
-//     role_id,
-//   } = req.body;
-
-//   const query =
-//     "INSERT INTO employees (firstname, email, Designation,password, Manager, status_id,role_id) VALUES (?, ?,?, ?, ?, ?,?)";
-//   db.query(
-//     query,
-//     [name, mail, password, Designation, Manager, role_id, status || 1],
-//     (err, result) => {
-//       if (err) {
-//         console.error("Error saving user data:", err);
-//         return res.status(500).json({ message: "Error saving user data" });
-//       }
-//       res.json({ success: true, message: "User added successfully!" });
-//     }
-//   );
-// };
-
-// // Update a user
-// exports.updateUser = (req, res) => {
-//   const { user_id, name, mail, password, Designation, Manager, status, role } =
-//     req.body;
-//   console.log(req.body);
-//   const query =
-//     "UPDATE employees SET firstname = ?, email = ?,password = ?, Designation = ?, Manager = ?, status_id = ?, role_id = ? WHERE user_id = ?";
-//   db.query(
-//     query,
-//     [name, mail, password, Designation, Manager, status, role, user_id],
-//     (err, result) => {
-//       if (err) {
-//         console.error("Error updating user data:", err);
-//         return res
-//           .status(500)
-//           .json({ success: false, message: "Error updating user data" });
-//       }
-//       res.json({ success: true, message: "User updated successfully!" });
-//     }
-//   );
-// };
-
 // Add a new user
 exports.addUser = (req, res) => {
   const { name, mail, password, Designation, Manager, status, role_id } =
     req.body;
 
-  // Hash the password
   bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
     if (err) {
       console.error("Error hashing password:", err);
@@ -199,7 +142,6 @@ exports.updateUser = (req, res) => {
   const { user_id, name, mail, password, Designation, Manager, status, role } =
     req.body;
 
-  // If the password is provided, hash it
   if (password) {
     bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
       if (err) {
@@ -235,7 +177,6 @@ exports.updateUser = (req, res) => {
       );
     });
   } else {
-    // If the password is not provided, update other fields without changing the password
     const query =
       "UPDATE employees SET firstname = ?, email = ?, Designation = ?, Manager = ?, status_id = ?, role_id = ? WHERE user_id = ?";
     db.query(

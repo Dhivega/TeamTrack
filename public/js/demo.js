@@ -499,6 +499,7 @@ document.addEventListener("DOMContentLoaded", function () {
           );
         }
       })
+
       .catch((error) => {
         console.error("Error:", error);
         showAlert("Error performing operation");
