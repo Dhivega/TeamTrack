@@ -27,10 +27,17 @@ document.getElementById("logIn").addEventListener("submit", async (event) => {
       body: JSON.stringify(data),
     });
 
+    if (!response.ok) {
+      const errorResponse = await response.json();
+      console.error("Login failed:", errorResponse.message || "Unknown error");
+      alert(errorResponse.message || "Failed to login");
+      return;
+    }
+
     const responseData = await response.json();
     console.log("Response data:", responseData);
 
-    if (response.ok && responseData.success) {
+    if (responseData.success) {
       let userArray = responseData.data;
 
       if (Array.isArray(userArray) && userArray.length > 0) {
@@ -40,18 +47,11 @@ document.getElementById("logIn").addEventListener("submit", async (event) => {
         if (user && user.role_id !== undefined) {
           console.log("Role ID:", user.role_id);
           window.localStorage.setItem("userID", user.user_id);
+          window.localStorage.setItem("userRoleId", user.role_id);
+          window.localStorage.setItem("userName", user.firstname);
 
-          if (user.role_id === 2) {
-            console.log("Redirecting to /week");
-            window.location.href = `/week`; //user page
-          } else if (user.role_id === 1) {
-            console.log("Redirecting to /demo");
-            window.location.href = `/demo`; //admin page
-          } else {
-            console.log("Unknown user role:", user.role_id);
-            alert("Unknown user role. Redirecting to unauthorized page.");
-            window.location.href = `/unauthorized?user_id=${user.user_id}`;
-          }
+          console.log("Redirecting to /activity");
+          window.location.href = `/week`;
         } else {
           console.error("Invalid user data:", user);
           alert("Invalid user data received.");

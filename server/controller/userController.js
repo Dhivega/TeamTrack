@@ -1,14 +1,14 @@
 const { name } = require("ejs");
 const db = require("../db/db");
 const bcrypt = require("bcrypt");
+const saltRounds = 10;
 const nodemailer = require("nodemailer");
-
+//register
 exports.reg = async (req, res) => {
   const { fname, lname, email, phone, password, designation, address } =
     req.body;
 
   try {
-    // Check if user already exists
     const existingUser = await db.query(
       "SELECT * FROM employees WHERE email = ?",
       [email]
@@ -20,10 +20,8 @@ exports.reg = async (req, res) => {
         .json({ success: false, message: "Account already exists" });
     }
 
-    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10); // 10 is the salt rounds
 
-    // Insert the user into the database
     const sql = `
       INSERT INTO employees (firstname, lastname, email, ph_no, password, Designation, Address)
       VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -50,12 +48,11 @@ exports.reg = async (req, res) => {
       .json({ success: false, message: "Internal Server Error" });
   }
 };
-
+//log
 exports.log = async (req, res) => {
   const { email, password, fname } = req.body;
 
   try {
-    // Fetch user data from MySQL database
     const results = await db.query("SELECT * FROM employees WHERE email = ?", [
       email,
     ]);
@@ -63,7 +60,6 @@ exports.log = async (req, res) => {
     if (results.length > 0) {
       const user = results[0];
 
-      // Validate password
       const isMatch = await bcrypt.compare(password, user.password);
       if (isMatch) {
         console.log("User data verified successfully");
@@ -91,7 +87,7 @@ exports.log = async (req, res) => {
 // Fetch all users
 exports.getAllUsers = (req, res) => {
   const query =
-    "SELECT user_id, firstname AS name, email AS mail, Designation, Manager, status_id AS status, role_id FROM employees";
+    "SELECT user_id, firstname AS name, email AS mail,password AS password, Designation, Manager, status_id AS status, role_id FROM employees";
   db.query(query, (err, results) => {
     if (err) {
       console.error("Error fetching user data:", err);
@@ -99,14 +95,15 @@ exports.getAllUsers = (req, res) => {
         .status(500)
         .json({ success: false, message: "Failed to fetch user data" });
     }
-
-    // Check and log results to ensure they are correct
-    console.log(results);
-
-    // Map status and role names
     results.forEach((element) => {
       element.statusName = element.status == 1 ? "Active" : "In Active";
-      element.roleName = element.role_id == 1 ? "admin" : "user";
+      if (element.role_id == 1) {
+        element.roleName = "admin";
+      } else if (element.role_id == 2) {
+        element.roleName = "user";
+      } else if (element.role_id == 3) {
+        element.roleName = "PM";
+      }
     });
 
     res.json({ success: true, data: results });
@@ -115,44 +112,88 @@ exports.getAllUsers = (req, res) => {
 
 // Add a new user
 exports.addUser = (req, res) => {
-  const { user_id, name, mail, Designation, Manager, status, role_id } =
+  const { name, mail, password, Designation, Manager, status, role_id } =
     req.body;
-  const query =
-    "INSERT INTO employees (firstname, email, Designation, Manager, status_id,role_id) VALUES (?, ?,?, ?, ?, ?)";
-  db.query(
-    query,
-    [name, mail, Designation, Manager, role_id, status || 1],
-    (err, result) => {
-      if (err) {
-        console.error("Error saving user data:", err);
-        return res.status(500).json({ message: "Error saving user data" });
-      }
-      res.json({ success: true, message: "User added successfully!" });
+
+  bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
+    if (err) {
+      console.error("Error hashing password:", err);
+      return res.status(500).json({ message: "Error saving user data" });
     }
-  );
+
+    const query =
+      "INSERT INTO employees (firstname, email,password,Designation, Manager, status_id, role_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    db.query(
+      query,
+      [name, mail, hashedPassword, Designation, Manager, status || 1, role_id],
+      (err, result) => {
+        if (err) {
+          console.error("Error saving user data:", err);
+          return res.status(500).json({ message: "Error saving user data" });
+        }
+        res.json({ success: true, message: "User added successfully!" });
+      }
+    );
+  });
 };
 
 // Update a user
 exports.updateUser = (req, res) => {
-  const { user_id, name, mail, Designation, Manager, status, role } = req.body;
-  console.log(req.body);
-  const query =
-    "UPDATE employees SET firstname = ?, email = ?, Designation = ?, Manager = ?, status_id = ?, role_id = ? WHERE user_id = ?";
-  db.query(
-    query,
-    [name, mail, Designation, Manager, status, role, user_id],
-    (err, result) => {
+  const { user_id, name, mail, password, Designation, Manager, status, role } =
+    req.body;
+
+  if (password) {
+    bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
       if (err) {
-        console.error("Error updating user data:", err);
+        console.error("Error hashing password:", err);
         return res
           .status(500)
           .json({ success: false, message: "Error updating user data" });
       }
-      res.json({ success: true, message: "User updated successfully!" });
-    }
-  );
-};
 
+      const query =
+        "UPDATE employees SET firstname = ?, email = ?, password = ?, Designation = ?, Manager = ?, status_id = ?, role_id = ? WHERE user_id = ?";
+      db.query(
+        query,
+        [
+          name,
+          mail,
+          hashedPassword,
+          Designation,
+          Manager,
+          status,
+          role || null,
+          user_id,
+        ],
+        (err, result) => {
+          if (err) {
+            console.error("Error updating user data:", err);
+            return res
+              .status(500)
+              .json({ success: false, message: "Error updating user data" });
+          }
+          res.json({ success: true, message: "User updated successfully!" });
+        }
+      );
+    });
+  } else {
+    const query =
+      "UPDATE employees SET firstname = ?, email = ?, Designation = ?, Manager = ?, status_id = ?, role_id = ? WHERE user_id = ?";
+    db.query(
+      query,
+      [name, mail, Designation, Manager, status, role || null, user_id],
+      (err, result) => {
+        if (err) {
+          console.error("Error updating user data:", err);
+          return res
+            .status(500)
+            .json({ success: false, message: "Error updating user data" });
+        }
+        res.json({ success: true, message: "User updated successfully!" });
+      }
+    );
+  }
+};
 // Delete a user
 exports.deleteUser = (req, res) => {
   const user_id = req.params.user_id;
@@ -262,7 +303,7 @@ exports.deleteProject = async (req, res) => {
 // Fetch all projects
 exports.getAllProjects = async (req, res) => {
   try {
-    const query = `SELECT * FROM projects`;
+    const query = `SELECT * FROM projects  WHERE code NOT IN ('DEV.H.01', 'DEV.I.01', 'DEV.I.02')`;
     const projects = await db.query(query);
 
     res.status(200).json({ success: true, data: projects });
@@ -271,10 +312,11 @@ exports.getAllProjects = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
+
 // Fetch all progress
 exports.getAllProgress = async (req, res) => {
   try {
-    const query = `SELECT * FROM projects`;
+    const query = `SELECT * FROM projects  WHERE code NOT IN ('DEV.H.01', 'DEV.I.01', 'DEV.I.02')`;
     const projects = await db.query(query);
 
     res.status(200).json({ success: true, data: projects });
@@ -329,83 +371,83 @@ exports.updateProgress = async (req, res) => {
   }
 };
 
-// Add a new project
-exports.addprogress = async (req, res) => {
-  const {
-    code,
-    Description,
-    start_date,
-    end_date,
-    actual_step,
-    critical,
-    weather,
-    past_two_weaks_review,
-    coming_two_weaks_review,
-    major_problem,
-  } = req.body;
+// // Add a new project
+// exports.addprogress = async (req, res) => {
+//   const {
+//     code,
+//     Description,
+//     start_date,
+//     end_date,
+//     actual_step,
+//     critical,
+//     weather,
+//     past_two_weaks_review,
+//     coming_two_weaks_review,
+//     major_problem,
+//   } = req.body;
 
-  try {
-    const sql = `INSERT INTO projects (code, Description, start_date, end_date, actual_step, critical,weather,past_two_weaks_review,coming_two_weaks_review,major_problem) VALUES (?, ?, ?, ?, ?, ?,?,?,?,?)`;
-    const values = [
-      code,
-      Description,
-      start_date,
-      end_date,
-      actual_step,
-      critical,
-      weather,
-      past_two_weaks_review,
-      coming_two_weaks_review,
-      major_problem,
-    ];
+//   try {
+//     const sql = `INSERT INTO projects (code, Description, start_date, end_date, actual_step, critical,weather,past_two_weaks_review,coming_two_weaks_review,major_problem) VALUES (?, ?, ?, ?, ?, ?,?,?,?,?)`;
+//     const values = [
+//       code,
+//       Description,
+//       start_date,
+//       end_date,
+//       actual_step,
+//       critical,
+//       weather,
+//       past_two_weaks_review,
+//       coming_two_weaks_review,
+//       major_problem,
+//     ];
 
-    await db.query(sql, values);
+//     await db.query(sql, values);
 
-    res
-      .status(201)
-      .json({ success: true, message: "Project added successfully" });
-  } catch (error) {
-    console.error("Error adding project:", error);
-    res.status(500).json({ success: false, message: "Internal Server Error" });
-  }
-};
+//     res
+//       .status(201)
+//       .json({ success: true, message: "Project added successfully" });
+//   } catch (error) {
+//     console.error("Error adding project:", error);
+//     res.status(500).json({ success: false, message: "Internal Server Error" });
+//   }
+// };
 
-exports.getUsers = (req, res) => {
-  const query =
-    "SELECT code as code,Description as description,Solution as solution,Activity_type as activity_Type,subsidiary as subsidiary,Complementary_desc as Complementary_desc  FROM project limit 3";
+// exports.getUsers = (req, res) => {
+//   const query =
+//     "SELECT code as code,Description as description,Solution as solution,Activity_type as activity_Type,subsidiary as subsidiary,Complementary_desc as Complementary_desc  FROM project limit 3";
 
-  db.query(query, (err, results) => {
-    if (err) {
-      console.error("Error fetching user data:", err);
-      return res
-        .status(500)
-        .json({ success: false, message: "Failed to fetch user data" });
-    }
-    res.json({ success: true, data: results });
-  });
-};
+//   db.query(query, (err, results) => {
+//     if (err) {
+//       console.error("Error fetching user data:", err);
+//       return res
+//         .status(500)
+//         .json({ success: false, message: "Failed to fetch user data" });
+//     }
+//     res.json({ success: true, data: results });
+//   });
+// };
 
 // fetch dynamically added rows from project table which are added by admin in admin (projects) page
-exports.getProjects = (req, res) => {
-  const query =
-    "SELECT code as code,Description as description,Solution as solution,Activity_type as activity_Type,subsidiary as subsidiary,Complementary_desc as Complementary_desc FROM project ";
 
-  db.query(query, (err, results) => {
-    if (err) {
-      console.error("Error fetching user data:", err);
-      return res
-        .status(500)
-        .json({ success: false, message: "Failed to fetch user data" });
-    }
-    res.json({ success: true, data: results });
-  });
-};
+// exports.getProjects = (req, res) => {
+//   const query =
+//     "SELECT code as code,Description as description,Solution as solution,Activity_type as activity_Type,subsidiary as subsidiary,Complementary_desc as Complementary_desc FROM project ";
+
+//   db.query(query, (err, results) => {
+//     if (err) {
+//       console.error("Error fetching user data:", err);
+//       return res
+//         .status(500)
+//         .json({ success: false, message: "Failed to fetch user data" });
+//     }
+//     res.json({ success: true, data: results });
+//   });
+// };
 
 // Weekly report:
 // fetch first 3 common rows which are not changing from project table
-
+//1st 3 default row in userpage
 exports.getreport = (req, res) => {
-  // console.log("res:" + res);
   const query =
     "SELECT code as code,Description as description,Solution as solution,activity_Type as activity_Type,subsidiary as subsidiary,Complementary_desc as Complementary_desc  FROM projects WHERE code IN ('DEV.H.01', 'DEV.I.01', 'DEV.I.02')";
 
@@ -419,7 +461,7 @@ exports.getreport = (req, res) => {
     res.json({ success: true, data: results });
   });
 };
-
+//fetching project
 exports.getProj = (req, res) => {
   const query =
     "SELECT code as code,Description as description,Solution as solution,activity_type as activity_Type,subsidiary as subsidiary,Complementary_desc as Complementary_desc FROM projects WHERE code NOT IN ('DEV.H.01', 'DEV.I.01', 'DEV.I.02')";
@@ -432,10 +474,10 @@ exports.getProj = (req, res) => {
         .json({ success: false, message: "Failed to fetch user data" });
     }
     res.json({ success: true, data: results });
-    // console.log("res:" + results.code);
   });
 };
 
+//saving and updating the report
 exports.saveReport = (req, res) => {
   const {
     year,
@@ -472,7 +514,7 @@ exports.saveReport = (req, res) => {
   `;
 
   const insertValues = [];
-  const updatePromises = [];
+  const updatevalue = [];
 
   reportData.forEach((row) => {
     const {
@@ -512,14 +554,13 @@ exports.saveReport = (req, res) => {
       code,
     ];
 
-    updatePromises.push(
+    updatevalue.push(
       new Promise((resolve, reject) => {
         db.query(checkQuery, [user_id, year, month, code], (error, results) => {
           if (error) {
             return reject(error);
           }
           if (results.length > 0) {
-            // Report exists, update it
             db.query(updateQuery, values, (updateError) => {
               if (updateError) {
                 return reject(updateError);
@@ -527,7 +568,6 @@ exports.saveReport = (req, res) => {
               resolve();
             });
           } else {
-            // Report does not exist, insert new
             insertValues.push([
               user_id || null,
               code || null,
@@ -556,7 +596,7 @@ exports.saveReport = (req, res) => {
     );
   });
 
-  Promise.all(updatePromises)
+  Promise.all(updatevalue)
     .then(() => {
       if (insertValues.length > 0) {
         db.query(insertQuery, [insertValues], (insertError, results) => {

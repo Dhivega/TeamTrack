@@ -31,7 +31,7 @@ document
 document
   .getElementById("password")
   .addEventListener("keydown", function (event) {
-    if (event.key === "Enter  ") {
+    if (event.key === "Enter") {
       event.preventDefault();
       document.getElementById("Confirm Password").focus();
     }
@@ -76,68 +76,79 @@ document
     }
   });
 
-//  document.getElementById('btn').style.display='none';
 var disableBtn = true;
 var enablebtn = false;
-var checkPassword = function () {
-  if (
-    document.getElementById("password").value == "" &&
-    document.getElementById("Confirm Password").value == ""
-  ) {
-    document.getElementById("message").style.color = "";
-    document.getElementById("message").innerHTML = "";
-  }
-  if (
-    document.getElementById("email").value == " " &&
-    document.getElementById("Confirm E-mail").value == ""
-  ) {
-    document.getElementById("message").style.color = "";
-    document.getElementById("message").innerHTML = "";
-  }
 
-  if (
-    document.getElementById("password").value ==
-    document.getElementById("Confirm Password").value
-  ) {
-    document.getElementById("message").style.color = "green";
-    document.getElementById("message").innerHTML = "matching";
-    // alert('password matching');
-    //document.getElementById('btn').style.display="block";
+var checkPassword = function () {
+  var password = document.getElementById("password").value;
+  var confirmPassword = document.getElementById("Confirm Password").value;
+
+  if (password === "" && confirmPassword === "") {
+    document
+      .getElementById("password")
+      .classList.remove("matching", "not-matching");
+    document
+      .getElementById("Confirm Password")
+      .classList.remove("matching", "not-matching");
+    document.getElementById("message").innerHTML = "";
+  } else if (password === confirmPassword) {
+    document.getElementById("password").classList.add("matching");
+    document.getElementById("password").classList.remove("not-matching");
+    document.getElementById("Confirm Password").classList.add("matching");
+    document
+      .getElementById("Confirm Password")
+      .classList.remove("not-matching");
+    document.getElementById("message").innerHTML = "";
     document.getElementById("btn").disabled = false;
     disableBtn = false;
-    document.getElementById("btn").enabled = true;
-    // enablebtn = true;
   } else {
-    document.getElementById("message").style.color = "red";
-    document.getElementById("message").innerHTML = "not matching";
-    // alert('password not matching');
-    //document.getElementById('btn').style.display="none";
+    document.getElementById("password").classList.add("not-matching");
+    document.getElementById("password").classList.remove("matching");
+    document.getElementById("Confirm Password").classList.add("not-matching");
+    document.getElementById("Confirm Password").classList.remove("matching");
+    document.getElementById("message").innerHTML = "";
     document.getElementById("btn").disabled = true;
     disableBtn = true;
   }
 };
+
 var checkEmail = function () {
-  if (
-    document.getElementById("email").value ==
-    document.getElementById("Confirm E-mail").value
-  ) {
-    document.getElementById("message1").style.color = "green";
-    document.getElementById("message1").innerHTML = "matching";
-    // alert('email match');
-    //document.getElementById('btn').style.display="block"
+  var email = document.getElementById("email").value;
+  var confirmEmail = document.getElementById("Confirm E-mail").value;
+
+  if (email === "" && confirmEmail === "") {
+    document
+      .getElementById("email")
+      .classList.remove("matching", "not-matching");
+    document
+      .getElementById("Confirm E-mail")
+      .classList.remove("matching", "not-matching");
+    document.getElementById("message1").innerHTML = "";
+  } else if (email === confirmEmail) {
+    document.getElementById("email").classList.add("matching");
+    document.getElementById("email").classList.remove("not-matching");
+    document.getElementById("Confirm E-mail").classList.add("matching");
+    document.getElementById("Confirm E-mail").classList.remove("not-matching");
+    document.getElementById("message1").innerHTML = "";
     document.getElementById("btn").disabled = false;
     disableBtn = false;
-    document.getElementById("btn").enabled = true;
-    // enablebtn = true;
   } else {
-    document.getElementById("message1").style.color = "red";
-    document.getElementById("message1").innerHTML = "not matching";
-    // alert('email not match');
-    //document.getElementById('btn').style.display="none"
+    document.getElementById("email").classList.add("not-matching");
+    document.getElementById("email").classList.remove("matching");
+    document.getElementById("Confirm E-mail").classList.add("not-matching");
+    document.getElementById("Confirm E-mail").classList.remove("matching");
+    document.getElementById("message1").innerHTML = "";
     document.getElementById("btn").disabled = true;
     disableBtn = true;
   }
 };
+
+document.getElementById("password").addEventListener("input", checkPassword);
+document
+  .getElementById("Confirm Password")
+  .addEventListener("input", checkPassword);
+document.getElementById("email").addEventListener("input", checkEmail);
+document.getElementById("Confirm E-mail").addEventListener("input", checkEmail);
 
 document.getElementById("signUp").addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -147,10 +158,7 @@ document.getElementById("signUp").addEventListener("submit", async (event) => {
   console.log("fname:" + fname);
   const lname = formData.get("lastname");
   const email = formData.get("email");
-  // const phone = formData.get("phone");
   const password = formData.get("password");
-  // const confirmPassword = formData.get("confirm pwd");
-
   const designation = formData.get("designation");
   const address = formData.get("address");
 

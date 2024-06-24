@@ -17,6 +17,14 @@
 
   <style>
     /* Your CSS styles */
+  .matching {
+    border: 2px solid green;
+  }
+
+  .not-matching {
+    border: 2px solid red;
+  }
+
   </style>
 </head>
 <body>
@@ -52,7 +60,7 @@
                   <input type="text" class="form-control" placeholder="Last Name *" value="" name="lastname" id="lastname" required />
                 </div>
                 <div class="form-group">
-                  <input type="email" name="Confirm E-mail" id="Confirm E-mail" class="form-control" placeholder="Your Confirm E-mail *" value="" name="confirm email" onkeyup="checkEmail()" required />
+                  <input type="email" name="Confirm E-mail" id="Confirm E-mail" class="form-control" placeholder="Confirm E-mail *" value="" name="confirm email" onkeyup="checkEmail()" required />
                   <span id='message1'></span>
                 </div>
                 <div class="form-group">
