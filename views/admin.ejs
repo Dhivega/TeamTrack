@@ -9,6 +9,18 @@
     <link rel="icon" href="img/icon.jpg">
 
     <style>
+        table td {
+        word-wrap: break-word;
+        white-space: normal;  
+        overflow: hidden;    
+        text-overflow: ellipsis;
+        max-width: 200px;  
+        }
+        
+        table th {
+        max-width: 100px;
+        }
+ 
         .filterable { margin-top: 15px; }
         .filterable .panel-heading .pull-right { margin-top: -20px; }
         .filterable .filters input[disabled] {
@@ -20,27 +32,48 @@
             height: auto;
         }
         .filterable .filters input[disabled]::placeholder { color: #333; }
-
-        .pagination {
-        display: flex;
-        justify-content: center;
-        margin-top: 20px;
-      }
-      .pagination button {
-        margin: 0 2px;
-        padding: 5px 10px;
-        border: 1px solid #ccc;
-        background-color: #f9f9f9;
-        cursor: pointer;
-      }
-      .pagination button.active {
-        background-color: #af007c;
-        color: white;
-      }
+        .pagination a {
+  /* display: inline-block; */
+  margin: 1px;
+  padding: 10px;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+  text-decoration: none;
+  color: #333;
+  background-color: #f1f1f1;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  transition: background-color 0.3s, color 0.3s;
+}
+ 
+.pagination a:hover {
+  background-color: #af007c;
+  color: white;
+}
+ 
+.pagination a.active {
+  background-color: #af007c;
+  color: white;
+  font-weight: bold;
+}
+ 
+.pagination a.prev, .pagination a.next {
+  border-radius: 0;
+  width:10px;
+  padding: 10px 15px;
+}
+ 
+.pagination {
+  text-align: center;
+  margin-top: 20px;
+}
+     
     </style>
 </head>
 <body>
-    <header class="wrapper" style="position: fixed;">
+    <header class="wrapper">
         <div>
             <a>
                 <img src="img/fives-logo-white3.png" alt="Your logo" height="50px" width="80px" id="top-left" />
@@ -60,9 +93,9 @@
  
     </header>
     
-    <div class="container" >
+    <div class="container">
         <div class="row clearfix">
-            <div class="col-md-12 column"style="margin-top: 80px;">
+            <div class="col-md-12 column">
                 <div class="panel panel-primary filterable">
                     <div class="panel-heading" style="background-color:#af007c;">
                         <h3 class="panel-title">Users</h3>
@@ -79,8 +112,9 @@
                                 <th><input type="text" class="form-control" placeholder="User ID" disabled name="user_id" /></th>
                                 <th><input type="text" class="form-control" placeholder="User Name" disabled name="name"/></th>
                                 <th><input type="email" class="form-control" placeholder="E Mail" disabled name="email"/></th>
+                                <th><input type="password" class="form-control" placeholder="Password" disabled name="Password"/></th>
                                 <th><input type="text" class="form-control" placeholder="Designation" disabled name="Designation"/></th>
-                                <th><input type="text" class="form-control" placeholder="Manager" disabled name="Manager"/></th>
+                                <th><input type="text" class="form-control" placeholder="Manager" disabled name="Manager_id"/></th>
                                 <th><input type="text" class="form-control" placeholder="Status" disabled name="status" /></th>
                                 <th><input type="text" class="form-control" placeholder="role" disabled name="role" /></th>
                                 <th><input type="text" class="form-control" placeholder="Action" disabled /></th>
@@ -90,7 +124,8 @@
                         </tbody>
                     </table>
                     <!-- Pagination controls -->
-                    
+                     
+                   
                 </div>
             </div>
         </div>
@@ -98,12 +133,17 @@
 
     
     
-    <center>
+    <!-- <center>
 
     <div class="pagination">
         <button id="prevPage" style="padding: 7px;">Previous</button>
         <button id="nextPage"style="padding: 7px;">Next</button>
       </div></center>
+       -->
+       <center> <div class="pagination" id="paginationLinks">
+        <!-- Numbered links will be dynamically inserted here -->
+    </div></center>
+
     <footer>
         <div id="copyright">&#169 ALL RIGHTS RESERVED</div>
     </footer>
@@ -130,17 +170,22 @@
                             <input type="email" class="form-control" id="editUserEmail" name="email">
                         </div>
                         <div class="form-group">
+                            <label for="editUserPwd">password</label>
+                            <input type="password" class="form-control" id="editUserPwd" name="email">
+                        </div>
+                        <div class="form-group">
                             <label for="editUserDesignation">Designation</label>
                             <input type="text" class="form-control" id="editUserDesignation" name="Designation">
                         </div>
                         <div class="form-group">
                             <label for="editUserManager">Manager</label>
-                            <select class="form-control" id="editUserManager" name="Manager"></select>
+                            
+                            <select class="form-control" id="editUserManager" name="Manager_id" ></select>
                         </div>
                         <div class="form-group">
                             <label for="editUserStatus">Status</label>
                            
-                            <select class="form-control" id="editUserStatus" name="status">
+                            <select class="form-control" id="editUserStatus" name="status" >
                           
                                 <option value="2">In Active</option>
                                 <option value="1">Active</option>
