@@ -1,6 +1,7 @@
 const { name } = require("ejs");
 const db = require("../db/db");
 const bcrypt = require("bcrypt");
+const saltRounds = 10;
 const nodemailer = require("nodemailer");
 
 exports.reg = async (req, res) => {
@@ -87,11 +88,22 @@ exports.log = async (req, res) => {
       .json({ success: false, message: "Internal Server Error" });
   }
 };
-
-// Fetch all users
+/// Fetch all users with manager names
 exports.getAllUsers = (req, res) => {
-  const query =
-    "SELECT user_id, firstname AS name, email AS mail, Designation, Manager, status_id AS status, role_id FROM employees";
+  const query = `
+    SELECT 
+      e.user_id, 
+      e.firstname AS name, 
+      e.email AS mail, 
+      e.password,
+      e.Designation, 
+      m.manager_name AS Manager_id, 
+      e.status_id AS status, 
+      e.role_id 
+    FROM 
+      employees e
+      LEFT JOIN manager m ON e.manager_id = m.manager_id
+  `;
   db.query(query, (err, results) => {
     if (err) {
       console.error("Error fetching user data:", err);
@@ -100,21 +112,24 @@ exports.getAllUsers = (req, res) => {
         .json({ success: false, message: "Failed to fetch user data" });
     }
 
-    // Check and log results to ensure they are correct
-    console.log(results);
-
-    // Map status and role names
     results.forEach((element) => {
       element.statusName = element.status == 1 ? "Active" : "In Active";
-      // element.roleName = element.role_id == 1 ? "admin" : "user";
-      if (element.role_id == 1) {
-        element.roleName = "admin";
-      } else if (element.role_id == 2) {
-        element.roleName = "user";
-      } else if (element.role_id == 3) {
-        element.roleName = "PM";
-      }
+      element.roleName =
+        element.role_id == 1 ? "admin" : element.role_id == 2 ? "user" : "PM";
     });
+
+    res.json({ success: true, data: results });
+  });
+};
+exports.getAllManagers = (req, res) => {
+  const query = "SELECT manager_id, manager_name FROM manager";
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error("Error fetching manager data:", err);
+      return res
+        .status(500)
+        .json({ success: false, message: "Failed to fetch manager data" });
+    }
 
     res.json({ success: true, data: results });
   });
@@ -122,42 +137,100 @@ exports.getAllUsers = (req, res) => {
 
 // Add a new user
 exports.addUser = (req, res) => {
-  const { user_id, name, mail, Designation, Manager, status, role_id } =
+  const { name, mail, password, Designation, Manager_id, status, role_id } =
     req.body;
-  const query =
-    "INSERT INTO employees (firstname, email, Designation, Manager, status_id,role_id) VALUES (?, ?,?, ?, ?, ?)";
-  db.query(
-    query,
-    [name, mail, Designation, Manager, role_id, status || 1],
-    (err, result) => {
-      if (err) {
-        console.error("Error saving user data:", err);
-        return res.status(500).json({ message: "Error saving user data" });
-      }
-      res.json({ success: true, message: "User added successfully!" });
+  bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
+    if (err) {
+      console.error("Error hashing password:", err);
+      return res.status(500).json({ message: "Error saving user data" });
     }
-  );
+    const query =
+      "INSERT INTO employees (firstname, email,password, Designation, manager_id, status_id, role_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    db.query(
+      query,
+      [
+        name,
+        mail,
+        hashedPassword,
+        Designation,
+        Manager_id,
+        status || 1,
+        role_id,
+      ],
+      (err, result) => {
+        if (err) {
+          console.error("Error saving user data:", err);
+          return res.status(500).json({ message: "Error saving user data" });
+        }
+        res.json({ success: true, message: "User added successfully!" });
+      }
+    );
+  });
 };
 
 // Update a user
 exports.updateUser = (req, res) => {
-  const { user_id, name, mail, Designation, Manager, status, role } = req.body;
-  console.log(req.body);
-  const query =
-    "UPDATE employees SET firstname = ?, email = ?, Designation = ?, Manager = ?, status_id = ?, role_id = ? WHERE user_id = ?";
-  db.query(
-    query,
-    [name, mail, Designation, Manager, status, role, user_id],
-    (err, result) => {
+  const {
+    user_id,
+    name,
+    mail,
+    password,
+    Designation,
+    Manager_id,
+    status,
+    role,
+  } = req.body;
+  if (password) {
+    bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
       if (err) {
-        console.error("Error updating user data:", err);
+        console.error("Error hashing password:", err);
         return res
           .status(500)
           .json({ success: false, message: "Error updating user data" });
       }
-      res.json({ success: true, message: "User updated successfully!" });
-    }
-  );
+
+      const query =
+        "UPDATE employees SET firstname = ?, email = ?, password = ?, Designation = ?, manager_id = ?, status_id = ?, role_id = ? WHERE user_id = ?";
+      db.query(
+        query,
+        [
+          name,
+          mail,
+          hashedPassword,
+          Designation,
+          Manager_id,
+          status,
+          role || null,
+          user_id,
+        ],
+        (err, result) => {
+          if (err) {
+            console.error("Error updating user data:", err);
+            return res
+              .status(500)
+              .json({ success: false, message: "Error updating user data" });
+          }
+          res.json({ success: true, message: "User updated successfully!" });
+        }
+      );
+    });
+  } else {
+    const query =
+      "UPDATE employees SET firstname = ?, email = ?, Designation = ?, manager_id = ?, status_id = ?, role_id = ? WHERE user_id = ?";
+    db.query(
+      query,
+      [name, mail, Designation, Manager_id, status, role || null, user_id],
+      (err, result) => {
+        if (err) {
+          console.error("Error updating user data:", err);
+          return res
+            .status(500)
+            .json({ success: false, message: "Error updating user data" });
+        }
+        res.json({ success: true, message: "User updated successfully!" });
+      }
+    );
+  }
 };
 
 // Delete a user
