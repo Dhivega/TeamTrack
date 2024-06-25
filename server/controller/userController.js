@@ -3,6 +3,7 @@ const db = require("../db/db");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const nodemailer = require("nodemailer");
+
 //register
 exports.reg = async (req, res) => {
   const { fname, lname, email, phone, password, designation, address } =
@@ -48,6 +49,7 @@ exports.reg = async (req, res) => {
       .json({ success: false, message: "Internal Server Error" });
   }
 };
+
 //log
 exports.log = async (req, res) => {
   const { email, password, fname } = req.body;
@@ -194,6 +196,7 @@ exports.updateUser = (req, res) => {
     );
   }
 };
+
 // Delete a user
 exports.deleteUser = (req, res) => {
   const user_id = req.params.user_id;
@@ -371,79 +374,6 @@ exports.updateProgress = async (req, res) => {
   }
 };
 
-// // Add a new project
-// exports.addprogress = async (req, res) => {
-//   const {
-//     code,
-//     Description,
-//     start_date,
-//     end_date,
-//     actual_step,
-//     critical,
-//     weather,
-//     past_two_weaks_review,
-//     coming_two_weaks_review,
-//     major_problem,
-//   } = req.body;
-
-//   try {
-//     const sql = `INSERT INTO projects (code, Description, start_date, end_date, actual_step, critical,weather,past_two_weaks_review,coming_two_weaks_review,major_problem) VALUES (?, ?, ?, ?, ?, ?,?,?,?,?)`;
-//     const values = [
-//       code,
-//       Description,
-//       start_date,
-//       end_date,
-//       actual_step,
-//       critical,
-//       weather,
-//       past_two_weaks_review,
-//       coming_two_weaks_review,
-//       major_problem,
-//     ];
-
-//     await db.query(sql, values);
-
-//     res
-//       .status(201)
-//       .json({ success: true, message: "Project added successfully" });
-//   } catch (error) {
-//     console.error("Error adding project:", error);
-//     res.status(500).json({ success: false, message: "Internal Server Error" });
-//   }
-// };
-
-// exports.getUsers = (req, res) => {
-//   const query =
-//     "SELECT code as code,Description as description,Solution as solution,Activity_type as activity_Type,subsidiary as subsidiary,Complementary_desc as Complementary_desc  FROM project limit 3";
-
-//   db.query(query, (err, results) => {
-//     if (err) {
-//       console.error("Error fetching user data:", err);
-//       return res
-//         .status(500)
-//         .json({ success: false, message: "Failed to fetch user data" });
-//     }
-//     res.json({ success: true, data: results });
-//   });
-// };
-
-// fetch dynamically added rows from project table which are added by admin in admin (projects) page
-
-// exports.getProjects = (req, res) => {
-//   const query =
-//     "SELECT code as code,Description as description,Solution as solution,Activity_type as activity_Type,subsidiary as subsidiary,Complementary_desc as Complementary_desc FROM project ";
-
-//   db.query(query, (err, results) => {
-//     if (err) {
-//       console.error("Error fetching user data:", err);
-//       return res
-//         .status(500)
-//         .json({ success: false, message: "Failed to fetch user data" });
-//     }
-//     res.json({ success: true, data: results });
-//   });
-// };
-
 // Weekly report:
 // fetch first 3 common rows which are not changing from project table
 //1st 3 default row in userpage
@@ -477,7 +407,6 @@ exports.getProj = (req, res) => {
   });
 };
 
-//saving and updating the report
 exports.saveReport = (req, res) => {
   const {
     year,
@@ -498,13 +427,13 @@ exports.saveReport = (req, res) => {
   }
 
   const insertQuery = `
-    INSERT INTO weekly_report (user_id, code, description, solution, activity_Type, subsidiary, Complementary_desc, year, month, weekno1, weekno2, weekno3, weekno4, weekno5, data1, data2, data3, data4, data5)
+    INSERT INTO weekly_report (user_id, code, year, month, weekno1, weekno2, weekno3, weekno4, weekno5, data1, data2, data3, data4, data5)
     VALUES ?
   `;
 
   const updateQuery = `
     UPDATE weekly_report
-    SET description = ?, solution = ?, activity_Type = ?, subsidiary = ?, Complementary_desc = ?, weekno1 = ?, weekno2 = ?, weekno3 = ?, weekno4 = ?, weekno5 = ?, data1 = ?, data2 = ?, data3 = ?, data4 = ?, data5 = ?
+    SET weekno1 = ?, weekno2 = ?, weekno3 = ?, weekno4 = ?, weekno5 = ?, data1 = ?, data2 = ?, data3 = ?, data4 = ?, data5 = ?
     WHERE user_id = ? AND year = ? AND month = ? AND code = ?
   `;
 
@@ -514,30 +443,12 @@ exports.saveReport = (req, res) => {
   `;
 
   const insertValues = [];
-  const updatevalue = [];
+  const updatePromises = [];
 
   reportData.forEach((row) => {
-    const {
-      user_id,
-      code,
-      description,
-      solution,
-      activity_Type,
-      subsidiary,
-      Complementary_desc,
-      data1,
-      data2,
-      data3,
-      data4,
-      data5,
-    } = row;
+    const { user_id, code, data1, data2, data3, data4, data5 } = row;
 
-    const values = [
-      description || null,
-      solution || null,
-      activity_Type || null,
-      subsidiary || null,
-      Complementary_desc || null,
+    const updateValues = [
       weekno1,
       weekno2,
       weekno3,
@@ -554,14 +465,14 @@ exports.saveReport = (req, res) => {
       code,
     ];
 
-    updatevalue.push(
+    updatePromises.push(
       new Promise((resolve, reject) => {
         db.query(checkQuery, [user_id, year, month, code], (error, results) => {
           if (error) {
             return reject(error);
           }
           if (results.length > 0) {
-            db.query(updateQuery, values, (updateError) => {
+            db.query(updateQuery, updateValues, (updateError) => {
               if (updateError) {
                 return reject(updateError);
               }
@@ -571,11 +482,6 @@ exports.saveReport = (req, res) => {
             insertValues.push([
               user_id || null,
               code || null,
-              description || null,
-              solution || null,
-              activity_Type || null,
-              subsidiary || null,
-              Complementary_desc || null,
               year,
               month,
               weekno1,
@@ -596,7 +502,7 @@ exports.saveReport = (req, res) => {
     );
   });
 
-  Promise.all(updatevalue)
+  Promise.all(updatePromises)
     .then(() => {
       if (insertValues.length > 0) {
         db.query(insertQuery, [insertValues], (insertError, results) => {
@@ -629,18 +535,68 @@ exports.fetchWeeklyReportByUserYearMonth = (req, res) => {
       .json({ success: false, message: "Missing required parameters" });
   }
 
-  const query = `
+  const weeklyReportQuery = `
     SELECT * FROM weekly_report
     WHERE user_id = ? AND year = ? AND month = ?
   `;
 
-  db.query(query, [user_id, year, month], (error, results) => {
-    if (error) {
-      console.error("Error fetching data:", error);
-      return res
-        .status(500)
-        .json({ success: false, message: "Failed to fetch report data" });
+  db.query(
+    weeklyReportQuery,
+    [user_id, year, month],
+    (error, weeklyReportResults) => {
+      if (error) {
+        console.error("Error fetching weekly report data:", error);
+        return res
+          .status(500)
+          .json({ success: false, message: "Failed to fetch report data" });
+      }
+
+      const codes = weeklyReportResults.map((row) => row.code);
+
+      if (codes.length === 0) {
+        return res.json({ success: true, data: [] });
+      }
+
+      const projectDetailsQuery = `
+      SELECT code, 
+             Description AS description, 
+             Solution AS solution, 
+             Activity_type AS activity_type, 
+             subsidiary, 
+             Complementary_desc AS Complementary_desc
+      FROM projects
+      WHERE code IN (?)
+    `;
+
+      db.query(projectDetailsQuery, [codes], (projectError, projectResults) => {
+        if (projectError) {
+          console.error("Error fetching project data:", projectError);
+          return res
+            .status(500)
+            .json({ success: false, message: "Failed to fetch project data" });
+        }
+
+        // Create a map for project details
+        const projectDetailsMap = projectResults.reduce((map, project) => {
+          map[project.code] = project;
+          return map;
+        }, {});
+
+        // Combine weekly report entries with corresponding project details
+        const combinedResults = weeklyReportResults.map((report) => {
+          const projectDetails = projectDetailsMap[report.code] || {};
+          return {
+            ...report,
+            description: projectDetails.description,
+            solution: projectDetails.solution,
+            activity_type: projectDetails.activity_type,
+            subsidiary: projectDetails.subsidiary,
+            Complementary_desc: projectDetails.Complementary_desc,
+          };
+        });
+
+        res.json({ success: true, data: combinedResults });
+      });
     }
-    res.json({ success: true, data: results });
-  });
+  );
 };
