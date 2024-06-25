@@ -1,0 +1,161 @@
+body,
+.reg {
+  margin: 0;
+  background-color: white;
+  font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+}
+header {
+  background-color: #c85cab;
+  font-size: 1em;
+  height: 80px;
+  display: flex;
+  justify-content: flex-end;
+  flex: 1;
+  text-decoration: none;
+}
+nav {
+  float: left;
+  flex: 1;
+  display: flex;
+}
+footer {
+  flex-shrink: 0;
+  text-align: center;
+  bottom: 0;
+  width: 100%;
+  margin-top: 100px;
+  padding: 1em;
+  color: white;
+
+  background-color: #c85cab;
+}
+#copyright {
+  text-align: center;
+  padding: 1em;
+}
+header a {
+  color: white;
+}
+#logo {
+  flex: 3;
+  text-decoration: none;
+  font-size: 1.5em;
+}
+nav {
+  flex: 2;
+  float: right;
+  display: flex;
+}
+nav a {
+  font-size: 1em;
+  display: inline-block;
+  margin-left: 20px;
+  text-decoration: none;
+  padding-top: 30px;
+  padding-right: 5px;
+}
+.mbtn {
+  margin-right: 110px;
+  float: right;
+  /* display: flex; */
+  flex: 2;
+  justify-content: space-between;
+
+  /* margin-bottom: 20px; */
+  /* margin-top: 50px; */
+}
+#btn {
+  background-color: #c85cab;
+  color: white;
+  border-radius: 8px;
+  padding: 15px 25px;
+  border: 1px solid #c85cab;
+  font-weight: bolder;
+  box-shadow: 2px;
+}
+body {
+  background-image: url(bg.jpg);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+}
+#top-left {
+  display: flex;
+  justify-content: flex-start;
+  display: inline-block;
+  margin-right: 800px;
+  height: 80px;
+  width: 80px;
+  padding-top: 0;
+}
+
+table {
+  width: 400px;
+  margin: auto;
+  margin-top: 50px;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+th,
+td {
+  text-transform: uppercase;
+  border: 2px solid black;
+  padding: 5px;
+}
+#row5,
+#row6,
+#row2 {
+  background-color: rgba(128, 128, 128, 0.4);
+}
+
+.editable-field {
+  display: flex;
+  justify-content: space-between;
+}
+.editable-input {
+  width: 100%;
+  border: none;
+  box-sizing: border-box;
+  background: transparent;
+}
+
+input {
+  border: none;
+  background: transparent;
+}
+
+.edit-button {
+  cursor: pointer;
+  font-size: 1em;
+  position: relative;
+  top: -1px;
+  right: 30px;
+}
+
+.hide {
+  visibility: hidden !important;
+}
+
+.editing {
+  background: #e9f5fa;
+  color: #181717;
+  box-shadow: -2px 0px 0px #0081c6;
+}
+#weekto {
+  background-color: rgba(128, 128, 128, 0.4);
+}
+/* #TableBody {
+  width: 100%;
+  table-layout: fixed;
+}  */
+
+.column-input,
+.dropdown {
+  width: 100%;
+
+  box-sizing: border-box;
+  overflow: hidden;
+  overflow: scroll;
+}

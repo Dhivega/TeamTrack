@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Project Management</title>
+    <link rel="stylesheet" href="css/demo.css" />
+    <link
+      href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="icon" href="img/icon.jpg" />
+    <style>
+      .filterable {
+        margin-top: 15px;
+      }
+      .filterable .panel-heading .pull-right {
+        margin-top: -20px;
+      }
+      .filterable .filters input[disabled] {
+        background-color: transparent;
+        border: none;
+        cursor: auto;
+        box-shadow: none;
+        padding: 0;
+        height: auto;
+      }
+      .filterable .filters input[disabled]::placeholder {
+        color: #333;
+      }
+      .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+      }
+      .pagination button {
+        margin: 0 2px;
+        padding: 5px 10px;
+        border: 1px solid #ccc;
+        background-color: #f9f9f9;
+        cursor: pointer;
+      }
+      .pagination button.active {
+        background-color: #af007c;
+        color: white;
+      }
+    </style>
+  </head>
+  <header class="wrapper">
+    <div>
+      <a href="your_homepage_url">
+        <img
+          src="img/fives-logo-white3.png"
+          alt="Your logo"
+          height="50px"
+          width="80px"
+          id="top-left"
+        />
+      </a>
+    </div>
+    <nav class="logo" style="margin-top: -80px; margin-right: 60px">
+      <!-- <a href="/projects">Home</a> -->
+     <a href="/week" id="activityLink">Activity</a>
+      <a href="/demo" id="demoLink">Users</a>
+      <a href="/projects" id="projectLink">Projects</a>
+      <a href="/progress" id="progressLink">Progress</a>
+
+      <a href="/login" id="logout-link">Logout</a>
+    </nav>
+    <!-- <center> <h4 style="margin-right:0px;margin-top:-50px; color: white;">ADMINISTRATOR</h4></center> -->
+  </header>
+  <body>
+    <div class="container">
+      <div class="row clearfix">
+        <div class="col-md-12 column">
+          <div class="panel panel-primary filterable">
+            <div class="panel-heading" style="background-color: #af007c">
+              <h3 class="panel-title">Projects</h3>
+              <div class="pull-right">
+                <button
+                  id="add_project"
+                  style="
+                    padding: 2px;
+                    margin-right:3px;
+                    color: black;
+                    background-color: white;
+                    border-radius: 3px;
+                    border: none;
+                    padding: 4px;
+                  "
+                >
+                  Add Project
+                </button>
+                <button class="btn btn-default btn-xs btn-filter">
+                  <span class="glyphicon glyphicon-filter" style="padding: 5px; margin-left: 2PX;"></span>
+              </button>
+              </div>
+            </div>
+            <table class="table table-bordered table-hover" id="tab_logic">
+              <thead>
+                <tr class="filters">
+                  <th><input type="text" class="form-control" placeholder="Code" disabled name="code" required/>
+                    </th>
+                  <th><input type="text" class="form-control" placeholder=" Description" disabled name="Description" required/>
+                   </th>
+                  <th><input type="text" class="form-control" placeholder="Solution" disabled name="Solution" required/>
+                    </th>
+                  <th><input type="text" class="form-control" placeholder="Activity_type" disabled name="Activity_type" required/></th>
+                  <th><input type="text" class="form-control" placeholder="Subsidiary" disabled name="Subsidiary" required />
+                    </th>
+                  <th><input type="text" class="form-control" placeholder="Complementary_desc" disabled name="Complementary_desc" required/> </th>
+                  <th><input type="text" class="form-control" placeholder="Project_Manager" disabled name="Project_Manager" required/> </th>
+                  <th style="width: 120px;">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Dynamic rows will be appended here -->
+              </tbody>
+            </table>
+          </div>
+          <div class="pagination">
+            <button id="prevPage">Previous</button>
+            <button id="nextPage">Next</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit/Add Modal -->
+    <div
+      class="modal fade"
+      id="editModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="editModalLabel"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title" id="editModalLabel">Project</h4>
+          </div>
+          <div class="modal-body">
+            <form id="projectForm">
+              <div class="form-group">
+                <label for="editProjectcode">Project Code</label>
+                <input type="text" class="form-control" id="editProjectcode" />
+              </div>
+              <div class="form-group">
+                <label for="editProjectdescription">Project Description</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="editProjectdescription"
+                />
+              </div>
+              <div class="form-group">
+                <label for="editProjectsolution">Project Solution</label>
+                <select class="form-control" id="editProjectsolution">
+                  <option value="">select solution</option>
+
+                    <option value="Audit">Audit</option>
+                    <option value="Study">Study</option>
+                    <option value="Dataiku">Dataiku</option>
+                    <option value="Power BI">Power BI</option>
+                    <option value="SAP Fiori">SAP Fiori</option>
+                    <option value="Talend">Talend</option>
+                    <option value="Web Development">Web Development</option>
+                    <option value="AIML : POC Finance">AIML : POC Finance</option>
+                    <option value="AIML : Siemens components">AIML : Siemens components</option>
+                    <option value="BI : Base installée">BI : Base installée</option>
+                    <option value="BI : Cybersecurity Introduction Cycle">BI : Cybersecurity Introduction Cycle</option>
+                    <option value="BI : Cybersecurity KPI">BI : Cybersecurity KPI</option>
+                    <option value="BI : Cybersecurity monthly">BI : Cybersecurity monthly</option>
+                    <option value="BI : Cybersecurity Pishing Campaigns">BI : Cybersecurity Pishing Campaigns</option>
+                    <option value="BI : Global Third Party DB">BI : Global Third Party DB</option>
+                    <option value="BI : HR Dashboard">BI : HR Dashboard</option>
+                    <option value="BI : HSE Dashboard">BI : HSE Dashboard</option>
+                    <option value="BI : KPI Services">BI : KPI Services</option>
+                    <option value="BI : MEPS follow up">BI : MEPS follow up</option>
+                    <option value="BI : Purchasing Control Tower">BI : Purchasing Control Tower</option>
+                    <option value="BI : Spend Data Lake">BI : Spend Data Lake</option>
+                    <option value="BI : SRM Dashboard">BI : SRM Dashboard</option>
+                    <option value="BI : SRM Licenses">BI : SRM Licenses</option>
+                    <option value="ETL : Documentation / contact / access">ETL : Documentation / contact / access</option>
+                    <option value="ETL : Fives Connect">ETL : Fives Connect</option>
+                    <option value="ETL : HRIS - ADP US">ETL : HRIS - ADP US</option>
+                    <option value="ETL : HRIS - BFC">ETL : HRIS - BFC</option>
+                    <option value="ETL : HRIS - Cegid">ETL : HRIS - Cegid</option>
+                    <option value="ETL : HRIS - France Payroll">ETL : HRIS - France Payroll</option>
+                    <option value="ETL : HRIS - Horoquartz">ETL : HRIS - Horoquartz</option>
+                    <option value="ETL : HRIS - IAM">ETL : HRIS - IAM</option>
+                    <option value="ETL : HRIS - Lucca">ETL : HRIS - Lucca</option>
+                    <option value="ETL : HRIS - Migration">ETL : HRIS - Migration</option>
+                    <option value="ETL : HRIS - Nordon">ETL : HRIS - Nordon</option>
+                    <option value="ETL : HRIS - TMS LMS">ETL : HRIS - TMS LMS</option>
+                    <option value="ETL : HRIS - TravelNet">ETL : HRIS - TravelNet</option>
+                    <option value="ETL : HRIS - UKG">ETL : HRIS - UKG</option>
+                    <option value="ETL : Planning PME">ETL : Planning PME</option>
+                    <option value="ETL : SAP - M-Files">ETL : SAP - M-Files</option>
+                    <option value="ETL : SciForma">ETL : SciForma</option>
+                    <option value="ETL :Mailchimp">ETL :Mailchimp</option>
+                    <option value="Fiori : Convergence Web Interfaces">Fiori : Convergence Web Interfaces</option>
+                    <option value="Fiori : Logistics interface">Fiori : Logistics interface</option>
+                    <option value="Fiori : Shipping management">Fiori : Shipping management</option>
+                    <option value="O365 : Directives Exemptions">O365 : Directives Exemptions</option>
+                    <option value="Web : Business Card">Web : Business Card</option>
+                    <option value="Web : EQT">Web : EQT</option>
+                    <option value="Web : IENet">Web : IENet</option>
+                    <option value="Web : Interconnexion">Web : Interconnexion</option>
+                    <option value="Web : Investors">Web : Investors</option>
+                    <option value="Web : IPA">Web : IPA</option>
+                    <option value="Web : IT Project Management">Web : IT Project Management</option>
+                    <option value="Web : OBSR">Web : OBSR</option>
+                    <option value="Web : SBFC">Web : SBFC</option>
+                    <option value="Web : SR&D">Web : SR&D</option>
+                    <option value="Web : TSM">Web : TSM</option>
+                    <option value="Web : Unlock SAP Account">Web : Unlock SAP Account</option>
+                    <option value="ETL : SAP - Kyriba">ETL : SAP - Kyriba</option>
+                    <option value="Web : migration Github">Web : migration Github</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="editProjectactivitytype">Activity Type</label>
+                <select class="form-control" id="editProjectactivitytype">
+                  <option value="">Select Activity_type</option>
+                    <option value="General activity ">General activity </option>
+                    <option value="Follow-up / Misc">Follow-up / Misc</option>
+                    <option value="Support ">Support </option>
+                    <option value="Project">Project </option>
+                    <option value="Analysis / POC">Analysis / POC</option>
+
+                </select>
+            </div>
+            <div class="form-group">
+              <label for="editProjectsubsidiary">Subsidiary</label>
+              <select class="form-control" id="editProjectsubsidiary">
+                  <option value="">Select Subsidiary</option>
+                  <!-- Cross Activities -->
+                  <optgroup label="CROSS ACTIVITIES">
+                    <option value="*** CROSS ACTIVITIES">*** CROSS ACTIVITIES</option>
+
+                      <option value="T810 - FI2011">T810 - FI2011</option>
+                      <option value="T811 - Fives Intralogistics SAS">T811 - Fives Intralogistics SAS</option>
+                      <option value="T813 - Fives Intralogistics S.P.A.">T813 - Fives Intralogistics S.P.A.</option>
+                      <option value="T841 - Fives Syleps SAS">T841 - Fives Syleps SAS</option>
+                      <option value="T848 - Fives Xcella">T848 - Fives Xcella</option>
+                      <option value="T814 - Fives Intralogistics Corp">T814 - Fives Intralogistics Corp</option>
+                      <option value="U872 - Fives DyaG Corp">U872 - Fives DyaG Corp</option>
+                      <option value="T009 - Fives Engineering Shanghai - Intralogistics">T009 - Fives Engineering Shanghai - Intralogistics</option>
+                      <option value="T019 - Shanghai Fives Automation and Processing Equipment - Intralogistics">T019 - Shanghai Fives Automation and Processing Equipment - Intralogistics</option>
+                      <option value="T812 - Fives Intralogistics KK">T812 - Fives Intralogistics KK</option>
+                  </optgroup>
+          
+                  <optgroup label="E2MOTION">
+                      <option value="U019 - Shanghai Fives Automation and Processing Equipment - Filling">U019 - Shanghai Fives Automation and Processing Equipment - Filling</option>
+                      <option value="U802 - Fives Conveying">U802 - Fives Conveying</option>
+                      <option value="U803 - Fives Conveying Iberica">U803 - Fives Conveying Iberica</option>
+                      <option value="U825 - Fives Filling & Sealing">U825 - Fives Filling & Sealing</option>
+                      <option value="U827 - Fives Filling & Sealing KK">U827 - Fives Filling & Sealing KK</option>
+                      <option value="U941 - Fives Cinetic">U941 - Fives Cinetic</option>
+                      <option value="R871 - Fives Cinetic Corp - Filling">R871 - Fives Cinetic Corp - Filling</option>
+                      <option value="U871 - Fives Cinetic Corp">U871 - Fives Cinetic Corp</option>
+                      <option value="U876 - Fives Cinetic Mexico SA de CV">U876 - Fives Cinetic Mexico SA de CV</option>
+                  </optgroup>
+          
+                  <optgroup label="HIGH PRECISION MACHINES">
+                      <option value="R885 - Fives Landis Limited">R885 - Fives Landis Limited</option>
+                      <option value="R886 - Fives Landis GmbH">R886 - Fives Landis GmbH</option>
+                      <option value="W019 - Shanghai Fives Automation and Processing Equipment - Grinding">W019 - Shanghai Fives Automation and Processing Equipment - Grinding</option>
+                      <option value="R890 - Fives Landis Corp">R890 - Fives Landis Corp</option>
+                      <option value="R893 - Fives Grinding Mexico SAPI de CV">R893 - Fives Grinding Mexico SAPI de CV</option>
+                      <option value="RZ891 - Fives Landis Corp - CITCO">RZ891 - Fives Landis Corp - CITCO</option>
+                      <option value="RZ892 - Fives Landis Corp - Gardner Abrasives">RZ892 - Fives Landis Corp - Gardner Abrasives</option>
+                      <option value="R880 - Fives Giustina Srl">R880 - Fives Giustina Srl</option>
+                      <option value="R881 - Daisho Seiki Corporation">R881 - Daisho Seiki Corporation</option>
+                      <option value="R882 - Daisho Seiki Korea Co Ltd">R882 - Daisho Seiki Korea Co Ltd</option>
+                      <option value="R883 - Daisho Seiki American Corporation">R883 - Daisho Seiki American Corporation</option>
+                  </optgroup>
+          
+                  <optgroup label="METAL CUTTING & COMPOSITES">
+                      <option value="K461 - Fives Machining">K461 - Fives Machining</option>
+                      <option value="Q019 - Shanghai Fives Automation and Processing Equipment - Machining">Q019 - Shanghai Fives Automation and Processing Equipment - Machining</option>
+                      <option value="K456 - 4192567 Canada Inc">K456 - 4192567 Canada Inc</option>
+                      <option value="K457 - Sogelire Inc">K457 - Sogelire Inc</option>
+                      <option value="K458 - Fives Liné Machines Inc.">K458 - Fives Liné Machines Inc.</option>
+                      <option value="Q401 - Fives Machining Systems Inc">Q401 - Fives Machining Systems Inc</option>
+                      <option value="Q403 - Fives Gidding & Lewis LLC">Q403 - Fives Gidding & Lewis LLC</option>
+                      <option value="Q406 - Fives Machining System Inc - MTSS">Q406 - Fives Machining System Inc - MTSS</option>
+                      <option value="Q407 - Fives Machining System Inc - Composites and Automated Solutions">Q407 - Fives Machining System Inc - Composites and Automated Solutions</option>
+                      <option value="Q408 - Fives Machining System Inc - Corporate">Q408 - Fives Machining System Inc - Corporate</option>
+                      <option value="Q412 - Fives Machining Systems Shanghai Co. Ltd.">Q412 - Fives Machining Systems Shanghai Co. Ltd.</option>
+                      <option value="Q413 - Fives Machining Systems Korea Inc.">Q413 - Fives Machining Systems Korea Inc.</option>
+                      <option value="Q420 - Fives Lund LLC">Q420 - Fives Lund LLC</option>
+                      <option value="QZ403 - Fives Gidding & Lewis LLC">QZ403 - Fives Gidding & Lewis LLC</option>
+                  </optgroup>
+          
+                  <optgroup label="PROCESS TECHNOLOGIES">
+                      <option value="A010 - Fives India">A010 - Fives India</option>
+                      <option value="A553 - Fives Solios SAS">A553 - Fives Solios SAS</option>
+                      <option value="A556 - PSA 2000">A556 - PSA 2000</option>
+                      <option value="A557 - PSA 2000 Saudi Arabia Ltd">A557 - PSA 2000 Saudi Arabia Ltd</option>
+                      <option value="A561 - Fives Solios Inc">A561 - Fives Solios Inc</option>
+                      <option value="A562 - Fives Solios Corp">A562 - Fives Solios Corp</option>
+                      <option value="A601 - Fives ECL">A601 - Fives ECL</option>
+                      <option value="A555 - Fives Services Gulf">A555 - Fives Services Gulf</option>
+                      <option value="A602 - Fives Services Southern Africa Pty Ltd">A602 - Fives Services Southern Africa Pty Ltd</option>
+                      <option value="A603 - Fives Services Inc">A603 - Fives Services Inc</option>
+                      <option value="A604 - Fives Services Gulf DMCC">A604 - Fives Services Gulf DMCC</option>
+                      <option value="A605 - Fives Services Australia Pty Ltd">A605 - Fives Services Australia Pty Ltd</option>
+                      <option value="A608 - Fives Services Mzansi Pty Ltd">A608 - Fives Services Mzansi Pty Ltd</option>
+                  </optgroup>
+          
+                  <optgroup label="ALUMINIUM">
+                      <option value="A010 - Fives India">A010 - Fives India</option>
+                      <option value="A553 - Fives Solios SAS">A553 - Fives Solios SAS</option>
+                      <option value="A556 - PSA 2000">A556 - PSA 2000</option>
+                      <option value="A557 - PSA 2000 Saudi Arabia Ltd">A557 - PSA 2000 Saudi Arabia Ltd</option>
+                      <option value="A561 - Fives Solios Inc">A561 - Fives Solios Inc</option>
+                      <option value="A562 - Fives Solios Corp">A562 - Fives Solios Corp</option>
+                      <option value="A601 - Fives ECL">A601 - Fives ECL</option>
+                      <option value="A555 - Fives Services Gulf">A555 - Fives Services Gulf</option>
+                      <option value="A602 - Fives Services Southern Africa Pty Ltd">A602 - Fives Services Southern Africa Pty Ltd</option>
+                      <option value="A603 - Fives Services Inc">A603 - Fives Services Inc</option>
+                      <option value="A604 - Fives Services Gulf DMCC">A604 - Fives Services Gulf DMCC</option>
+                      <option value="A605 - Fives Services Australia Pty Ltd">A605 - Fives Services Australia Pty Ltd</option>
+                      <option value="A608 - Fives Services Mzansi Pty Ltd">A608 - Fives Services Mzansi Pty Ltd</option>
+                  </optgroup>
+          
+                  <optgroup label="ACIER">
+                      <option value="C901 - Fives Stein">C901 - Fives Stein</option>
+                      <option value="C903 - Fives Stein Ltd">C903 - Fives Stein Ltd</option>
+                      <option value="C909 - Fives Stein Metallurgical Technology">C909 - Fives Stein Metallurgical Technology</option>
+                      <option value="C920 - Fives Stein India Projects">C920 - Fives Stein India Projects</option>
+                      <option value="C940 - Fives Celes">C940 - Fives Celes</option>
+                      <option value="C950 - Fives Steel Spain">C950 - Fives Steel Spain</option>
+                      <option value="E621 - F.L. Metal">E621 - F.L. Metal</option>
+                      <option value="E623 - Fives ST Corp.">E623 - Fives ST Corp.</option>
+                      <option value="E625 - Fives Industries">E625 - Fives Industries</option>
+                      <option value="E626 - Fives DMS">E626 - Fives DMS</option>
+                      <option value="E630 - Fives Keods">E630 - Fives Keods</option>
+                      <option value="D201 - Fives Bronx Inc">D201 - Fives Bronx Inc</option>
+                      <option value="D202 - Fives Bronx Ltd">D202 - Fives Bronx Ltd</option>
+                      <option value="D211 - Fives OTO Spa">D211 - Fives OTO Spa</option>
+                  </optgroup>
+          
+                  <optgroup label="CIMENT">
+                      <option value="P102 - Fives FCB">P102 - Fives FCB</option>
+                      <option value="P113 - Fives FCB Services Mexico SA de CV">P113 - Fives FCB Services Mexico SA de CV</option>
+                      <option value="P114 - Fives FCB Sénégal">P114 - Fives FCB Sénégal</option>
+                  </optgroup>
+          
+                  <optgroup label="ENERGIE">
+                      <option value="G033 - Fives Cryo">G033 - Fives Cryo</option>
+                      <option value="G035 - Fives Cryomec AG">G035 - Fives Cryomec AG</option>
+                      <option value="G036 - Fives Cryo Inc.">G036 - Fives Cryo Inc.</option>
+                      <option value="G037 - Fives Cryo Suzhou">G037 - Fives Cryo Suzhou</option>
+                      <option value="J062 - Fives-Lille do Brasil">J062 - Fives-Lille do Brasil</option>
+                      <option value="J063 - Fives Cail - KCP Ltd">J063 - Fives Cail - KCP Ltd</option>
+                      <option value="J104 - Fives Cail">J104 - Fives Cail</option>
+                      <option value="N019 - Shanghai Fives Automation and Processing Equipment - Combustion">N019 - Shanghai Fives Automation and Processing Equipment - Combustion</option>
+                      <option value="N050 - Fives Pillard">N050 - Fives Pillard</option>
+                      <option value="N051 - Fives Pillard Deutschland GmbH">N051 - Fives Pillard Deutschland GmbH</option>
+                      <option value="N052 - Fives Pillard Espana">N052 - Fives Pillard Espana</option>
+                      <option value="N054 - Fives Combustion Systems">N054 - Fives Combustion Systems</option>
+                      <option value="N055 - Fives Itas S.P.A">N055 - Fives Itas S.P.A</option>
+                      <option value="L720 - Fives NA Combustion Inc">L720 - Fives NA Combustion Inc</option>
+                      <option value="L721 - N A C Service">L721 - N A C Service</option>
+                      <option value="L725 - Fives NA Combustion Canada">L725 - Fives NA Combustion Canada</option>
+                      <option value="M713 - Fives NA Combustion France">M713 - Fives NA Combustion France</option>
+                      <option value="M714 - Fives NA Combustion Netherlands">M714 - Fives NA Combustion Netherlands</option>
+                      <option value="M717 - F N A Combustion Spain SL">M717 - F N A Combustion Spain SL</option>
+                  </optgroup>
+          
+                  <optgroup label="TRANSVERSAL ACTIVITIES">
+                      <option value="V831 - Fives Maintenance">V831 - Fives Maintenance</option>
+                  </optgroup>
+          
+                  <optgroup label="SOURCING COMPANIES">
+                      <option value="Y009 - Fives Engineering Shanghai">Y009 - Fives Engineering Shanghai</option>
+                      <option value="Y019 - Shanghai Fives Automation and Processing Equipment Co Ltd">Y019 - Shanghai Fives Automation and Processing Equipment Co Ltd</option>
+                      <option value="YZ008 - Fives do Brasil">YZ008 - Fives do Brasil</option>
+                  </optgroup>
+          
+                  <optgroup label="ADDUP">
+                      <option value="K462 - AddUp SAS">K462 - AddUp SAS</option>
+                  </optgroup>
+          
+                  <optgroup label="OTHER ACTIVITIES">
+                      <option value="F031 - Fives Nordon">F031 - Fives Nordon</option>
+                  </optgroup>
+          
+                  <optgroup label="HOLDING ACTIVITIES">
+                      <option value="Y001 - Fives">Y001 - Fives</option>
+                      <option value="Y005 - Novafives">Y005 - Novafives</option>
+                      <option value="Y007 - Fives UK Holding Ltd">Y007 - Fives UK Holding Ltd</option>
+                      <option value="Y011 - FI2006">Y011 - FI2006</option>
+                      <option value="Y012 - Fives Inc">Y012 - Fives Inc</option>
+                      <option value="Y017 - Fives Italy Srl">Y017 - Fives Italy Srl</option>
+                      <option value="Y020 - Fives Japan KK">Y020 - Fives Japan KK</option>
+                      <option value="Y021 - Fives Lease">Y021 - Fives Lease</option>
+                      <option value="Y022 - Fives CortX">Y022 - Fives CortX</option>
+                      <option value="Y023 - Fives Orsay">Y023 - Fives Orsay</option>
+                      <option value="Y024 - Fives Alexandre III">Y024 - Fives Alexandre III</option>
+                      <option value="Y025 - FivesManco">Y025 - FivesManco</option>
+                      <option value="Y041 - Eiffel Ré">Y041 - Eiffel Ré</option>
+                      <option value="Y026 - Fives Real Estate">Y026 - Fives Real Estate</option>
+                      <option value="Y027 - Fives RE Soultz">Y027 - Fives RE Soultz</option>
+                      <option value="Y028 - Fives RE Technopole du Château Gombert">Y028 - Fives RE Technopole du Château Gombert</option>
+                      <option value="Y029 - Fives RE Martillac">Y029 - Fives RE Martillac</option>
+                      <option value="Y030 - Fives RE Nancy">Y030 - Fives RE Nancy</option>
+                      <option value="Y031 - Fives RE Héricourt">Y031 - Fives RE Héricourt</option>
+                      <option value="Y032 - Fives RE Val d'Europe">Y032 - Fives RE Val d'Europe</option>
+                      <option value="Y033 - Fives RE Golbey">Y033 - Fives RE Golbey</option>
+                      <option value="Y034 - Fives RE Ronchin">Y034 - Fives RE Ronchin</option>
+                      <option value="Y035 - Fives RE Le Bignon">Y035 - Fives RE Le Bignon</option>
+                      <option value="Y036 - Fives RE Capdenac">Y036 - Fives RE Capdenac</option>
+                      <option value="Y037 - Fives RE Mios">Y037 - Fives RE Mios</option>
+                      <option value="Y038 - Fives RE Givors">Y038 - Fives RE Givors</option>
+                      <option value="Y039 - Fives RE Lorient">Y039 - Fives RE Lorient</option>
+                      <option value="Y040 - Fives RE Ploemeur">Y040 - Fives RE Ploemeur</option>
+                  </optgroup>
+              </select>
+          </div>
+          
+          
+          
+            
+              <div class="form-group">
+                <label for="editcomplementarydescription"
+                  >Complementary Description</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="editcomplementarydescription"
+                  name="editcomplementarydescription"
+                />
+              </div>
+              <div class="form-group">
+                <label for="editProjectManager">Project Manager</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="editProjectManager"
+                />
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">
+              Close
+            </button>
+            <button type="button" class="btn btn-primary" id="saveChanges">
+              Save changes
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer>
+        <div id="copyright">&#169 ALL RIGHTS RESERVED</div>
+    </footer>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script>
+document.addEventListener("DOMContentLoaded", () => {
+            // Logout link handler
+            document.getElementById("logoutLink").addEventListener("click", (event) => {
+                event.preventDefault();
+                window.localStorage.removeItem("userID");
+                window.localStorage.removeItem("userRoleId");
+                window.location.href = event.target.href;
+            });
+
+            // Function to update the navbar based on role ID
+            function updateNavbar(roleId) {
+                const activityLink = document.getElementById("activityLink");
+                const demoLink = document.getElementById("demoLink");
+                const projectLink = document.getElementById("projectLink");
+                const progressLink = document.getElementById("progressLink");
+
+                // Hide all links initially
+                activityLink.style.display = "none";
+                demoLink.style.display = "none";
+                projectLink.style.display = "none";
+                progressLink.style.display = "none";
+
+                // Show only the activity and logout links for users
+                if (roleId === 2) {
+                    activityLink.style.display = "block";
+                } 
+                // Show all links for admins
+                else if (roleId === 1) {
+                    activityLink.style.display = "block";
+                    demoLink.style.display = "block";
+                    projectLink.style.display = "block";
+                    progressLink.style.display = "block";
+                }
+                else if (roleId===3){
+                    activityLink.style.display = "block";
+                    progressLink.style.display = "block";
+                }
+            }
+
+            // Check for stored user role and update the navbar on page load
+            const storedRoleId = localStorage.getItem("userRoleId");
+            if (storedRoleId) {
+                updateNavbar(parseInt(storedRoleId));
+            } else {
+                // Default behavior if no role ID is found
+                updateNavbar(2);  // Assuming 2 is the default role (user)
+            }
+        });
+    </script>
+    <script src="js/project.js"></script>
+  </body>
+</html>

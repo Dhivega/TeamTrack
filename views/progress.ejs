@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Progress</title>
+  <link rel="stylesheet" href="css/demo.css">
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="icon" href="img/icon.jpg">
+  <style>
+  table td {
+  word-wrap: break-word;
+  white-space: normal;  
+  overflow: hidden;     
+  text-overflow: ellipsis; 
+  max-width: 200px;   
+} 
+table th {
+  max-width: 100px; 
+} 
+    .filterable {
+      margin-top: 15px;
+    }
+    .filterable .panel-heading .pull-right {
+      margin-top: -20px;
+    }
+    .filterable .filters input[disabled] {
+      background-color: transparent;
+      border: none;
+      cursor: auto;
+      box-shadow: none;
+      padding: 0;
+      height: auto;
+    }
+    .filterable .filters input[disabled]::placeholder {
+      color: #333;
+    }
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+      }
+      .pagination button {
+        margin: 0 2px;
+        padding: 5px 10px;
+        border: 1px solid #ccc;
+        background-color: #f9f9f9;
+        cursor: pointer;
+      }
+      .pagination button.active {
+        background-color: #af007c;
+        color: white;
+      }
+  </style>
+</head>
+<body>
+<header class="wrapper">
+  <div>
+    <a href="your_homepage_url">
+      <img src="img/fives-logo-white3.png" alt="Your logo" height="50px" width="80px" id="top-left">
+    </a>
+  </div>
+  <nav class="logo" style="margin-top: -80px; margin-right: 60px">
+    <!-- <a href="/projects">Home</a> -->
+       <a href="/week" id="activityLink">Activity</a>
+      <a href="/demo" id="demoLink">Users</a>
+      <a href="/projects" id="projectLink">Projects</a>
+      <a href="/progress" id="progressLink">Progress</a>
+
+      <a href="/login" id="logout-link">Logout</a>
+  </nav>
+  <!-- <center> <h4 style="margin-right:0px;margin-top:-50px; color: white;">ADMINISTRATOR</h4></center> -->
+</header>
+<div class="container">
+  <div class="row clearfix">
+    <div class="col-md-12 column">
+      <div class="panel panel-primary filterable">
+        <div class="panel-heading" style="background-color: #af007c">
+          <h3 class="panel-title">Project Progress</h3>
+          <div class="pull-right">
+            <button id="add_project" style="padding: 2px; margin-right: 10px; color: black; background-color: white; border-radius: 3px; border: none; padding: 5px;display: none;">
+              Add Project
+            </button>
+          </div>
+        </div>
+        <table class="table table-bordered table-hover" id="tab_logic">
+          <thead>
+            <tr class="filters">
+              <th>Code</th>
+              <th>Description</th>
+              <th style="width:90px;">Start Date</th>
+              <th style="width:90px;">End Date</th>
+              <th>Actual Step</th>
+              <th>Critical</th>
+              <th>Weather</th>
+              <th>Past Two Weeks Review</th>
+              <th>Coming Two Weeks Review</th>
+              <th>Major Problems</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Dynamic rows will be appended here -->
+          </tbody>
+        </table>
+        
+      </div>
+    </div>
+  </div>
+</div>
+<div class="pagination">
+  <button id="prevPage" disabled> Previous</button>
+  <button id="nextPage" disabled>Next</button>
+</div>
+
+<!-- Edit/Add Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="editModalLabel">Project</h4>
+      </div>
+      <div class="modal-body">
+        <form id="projectForm">
+          <div class="form-group">
+            <label for="editProjectCode">Project Code</label>
+            <input type="text" class="form-control" id="editProjectCode" readonly>
+          </div>
+          <div class="form-group">
+            <label for="editProjectDescription">Project Description</label>
+            <input type="text" class="form-control" id="editProjectDescription" readonly>
+          </div>
+          <div class="form-group">
+            <label for="editProjectstart_date">Start Date</label>
+            <input type="date" class="form-control" id="editProjectstart_date">
+          </div>
+          <div class="form-group">
+            <label for="editProjectend_date">End Date</label>
+            <input type="date" class="form-control" id="editProjectend_date">
+          </div>
+          <div class="form-group">
+            <label for="editProjectactual_step">Actual Step</label>
+            <input type="text" class="form-control" id="editProjectactual_step">
+          </div>
+          <div class="form-group">
+            <label for="editProjectCritical">Critical</label>
+            <select class="form-control" id="editProjectCritical">
+              <option value="">Select Critical</option>
+
+              <option value="Easy">Easy</option>
+              <option value="Medium">Medium</option>
+              <option value="Hard">Hard</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="editProjectWeather">Weather</label>
+            <select class="form-control" id="editProjectWeather">
+              <option value="">Select Weather</option>
+
+              <option value="Green">Green</option>
+              <option value="Orange">Orange</option>
+              <option value="Red">Red</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="editProjectpast_two_weaks_review">Past Two Weeks Review</label>
+            <input type="text" class="form-control" id="editProjectpast_two_weaks_review">
+          </div>
+          <div class="form-group">
+            <label for="editProjectComingReview">Coming Two Weeks Review</label>
+            <input type="text" class="form-control" id="editProjectComingReview">
+          </div>
+          <div class="form-group">
+            <label for="editProjectProblems">Major Problems</label>
+            <input type="text" class="form-control" id="editProjectProblems">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="saveChanges">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+<footer style="margin-top:350px;">
+  <div id="copyright">&#169 ALL RIGHTS RESERVED</div>
+</footer>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script>
+ document.addEventListener("DOMContentLoaded", () => {
+            // Logout link handler
+            document.getElementById("logoutLink").addEventListener("click", (event) => {
+                event.preventDefault();
+                window.localStorage.removeItem("userID");
+                window.localStorage.removeItem("userRoleId");
+                window.location.href = event.target.href;
+            });
+
+            // Function to update the navbar based on role ID
+            function updateNavbar(roleId) {
+                const activityLink = document.getElementById("activityLink");
+                const demoLink = document.getElementById("demoLink");
+                const projectLink = document.getElementById("projectLink");
+                const progressLink = document.getElementById("progressLink");
+
+                // Hide all links initially
+                activityLink.style.display = "none";
+                demoLink.style.display = "none";
+                projectLink.style.display = "none";
+                progressLink.style.display = "none";
+
+                // Show only the activity and logout links for users
+                if (roleId === 2) {
+                    activityLink.style.display = "block";
+                } 
+                // Show all links for admins
+                else if (roleId === 1) {
+                    activityLink.style.display = "block";
+                    demoLink.style.display = "block";
+                    projectLink.style.display = "block";
+                    progressLink.style.display = "block";
+                }
+                else if (roleId===3){
+                    activityLink.style.display = "block";
+                    progressLink.style.display = "block";
+                    
+                }
+            }
+
+            // Check for stored user role and update the navbar on page load
+            const storedRoleId = localStorage.getItem("userRoleId");
+            if (storedRoleId) {
+                updateNavbar(parseInt(storedRoleId));
+            } else {
+                // Default behavior if no role ID is found
+                updateNavbar(2);  // Assuming 2 is the default role (user)
+            }
+        });
+</script>
+<script src="js/progress.js"></script>
+</body>
+</html>
