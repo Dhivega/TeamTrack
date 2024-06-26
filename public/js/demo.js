@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
   let currentPage = 1;
-  const rowsPerPage = 5;
+  let rowsPerPage = document.getElementById("rowsValue").value;
   let usersData = [];
   let userIdToDelete = null; // Store the user ID to delete
 

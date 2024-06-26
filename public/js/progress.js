@@ -1,10 +1,3 @@
-document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("logout-link").addEventListener("click", (event) => {
-    event.preventDefault();
-    window.localStorage.removeItem("userID");
-    window.location.href = event.target.href;
-  });
-});
 document.addEventListener("DOMContentLoaded", function () {
   const addProjectButton = document.getElementById("add_project");
   const saveChangesButton = document.getElementById("saveChanges");

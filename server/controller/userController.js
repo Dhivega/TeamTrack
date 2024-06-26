@@ -375,7 +375,6 @@ exports.updateProgress = async (req, res) => {
 };
 
 // Weekly report:
-// fetch first 3 common rows which are not changing from project table
 //1st 3 default row in userpage
 exports.getreport = (req, res) => {
   const query =

@@ -14,13 +14,7 @@ header {
   height: 80px;
   display: flex;
   justify-content: flex-end;
-  flex: 3;
   text-decoration: none;
-}
-nav {
-  float: left;
-  flex: 1;
-  display: flex;
 }
 footer {
   flex-shrink: 0;
@@ -41,13 +35,7 @@ footer {
 header a {
   color: white;
 }
-#logo {
-  flex: 3;
-  text-decoration: none;
-  font-size: 1.5em;
-}
 nav {
-  flex: 2;
   float: right;
   display: flex;
 }
