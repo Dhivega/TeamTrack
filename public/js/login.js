@@ -50,7 +50,6 @@ document.getElementById("logIn").addEventListener("submit", async (event) => {
           window.localStorage.setItem("userRoleId", user.role_id);
           window.localStorage.setItem("userName", user.firstname);
 
-          // Redirect to the activity page initially
           console.log("Redirecting to /activity");
           window.location.href = `/week`;
         } else {

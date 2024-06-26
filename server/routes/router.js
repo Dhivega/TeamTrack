@@ -14,24 +14,24 @@ router.get("/login", (req, res) => {
   res.render("login");
 });
 
-router.get("/forgot", (req, res) => {
-  res.render("forgot");
-});
-
-router.get("/admin", (req, res) => {
-  res.render("admin");
-});
-
 router.get("/progress", (req, res) => {
   res.render("progress");
 });
 
-router.get("/projects", (req, res) => {
-  res.render("projects");
+router.get("/forgot", (req, res) => {
+  res.render("forgot");
+});
+
+router.get("/demo", (req, res) => {
+  res.render("demo");
 });
 
 router.get("/week", (req, res) => {
   res.render("week");
+});
+
+router.get("/projects", (req, res) => {
+  res.render("projects");
 });
 
 router.post("/login", userController.log);
@@ -53,18 +53,13 @@ router.post("/add-project", userController.addProject);
 router.put("/update-project", userController.updateProject);
 router.delete("/delete-project/:Project_id", userController.deleteProject);
 router.get("/projects-data", userController.getAllProjects);
-router.get("/managers-data", userController.getAllManagers);
+
 router.get("/progress-data", userController.getAllProgress);
 router.put("/update-progress", userController.updateProgress);
-// router.post("/add-progress", userController.addprogress);
-
-router.get("/users-data", userController.getUsers);
-
-router.get("/projects-data", userController.getProjects);
 
 router.get("/report-data", userController.getreport);
 
-// router.get("/proj-data", userController.getProj);
+router.get("/proj-data", userController.getProj);
 
 router.post("/save-report", userController.saveReport);
 router.get("/get-report", userController.fetchWeeklyReportByUserYearMonth);

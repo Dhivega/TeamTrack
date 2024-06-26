@@ -1,368 +1,143 @@
-document.addEventListener("DOMContentLoaded", function () {
-  let currentPage = 1;
-  const rowsPerPage = 5;
-  let usersData = [];
-  let managersData = [];
-  let userIdToDelete = null; // Store the user ID to delete
-
-  function showAlert(message) {
-    document.getElementById("alertMessage").textContent = message;
-    $("#alertModal").modal("show");
-  }
-
-  function showConfirm(userId) {
-    userIdToDelete = userId;
-    $("#confirmModal").modal("show");
-  }
-  function fetchUsers() {
-    Promise.all([fetch("/users-data"), fetch("/managers-data")])
-      .then((responses) => Promise.all(responses.map((res) => res.json())))
-      .then(([usersResponse, managersResponse]) => {
-        if (usersResponse.success) {
-          usersData = usersResponse.data;
-          displayUsers();
-          createPagination();
-        } else {
-          showAlert("Failed to fetch user data");
-        }
-
-        if (managersResponse.success) {
-          managersData = managersResponse.data;
-          populateManagerDropdown();
-        } else {
-          showAlert("Failed to fetch manager data");
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-        showAlert("Error fetching data");
-      });
-  }
-
-  function displayUsers() {
-    const tbody = document.querySelector("#tab_logic tbody");
-    tbody.innerHTML = "";
-    const start = (currentPage - 1) * rowsPerPage;
-    const end = Math.min(start + rowsPerPage, usersData.length);
-
-    for (let i = start; i < end; i++) {
-      const user = usersData[i];
-      const row = `<tr>
-                <td>${user.user_id}</td>
-                <td>${user.name}</td>
-                <td>${user.mail}</td>
-                <td>${user.password}</td>
-                <td>${user.Designation || ""}</td>
-                <td>${user.Manager_id || ""}</td>
-                <td>${user.statusName}</td>
-                <td>${user.roleName}</td>
-                <td>
-                    <button class="btn btn-xs btn-info editUser" data-id="${
-                      user.user_id
-                    }">Edit</button>
-                    <button class="btn btn-xs btn-danger deleteUser" data-id="${
-                      user.user_id
-                    }">Delete</button>
-                </td>
-            </tr>`;
-      tbody.insertAdjacentHTML("beforeend", row);
-    }
-
-    updatePagination();
-    addEditDeleteEventListeners();
-  }
-
-  function populateManagerDropdown() {
-    const managerSelect = document.querySelector("#editUserManager");
-    managerSelect.innerHTML = "";
-    managersData.forEach((manager) => {
-      const option = document.createElement("option");
-      option.value = manager.manager_id;
-      option.textContent = manager.manager_name;
-      managerSelect.appendChild(option);
-    });
-  }
-
-  function updatePagination() {
-    const totalPages = Math.ceil(usersData.length / rowsPerPage);
-    const paginationLinks = document.getElementById("paginationLinks");
-    paginationLinks.innerHTML = "";
-
-    for (let i = 1; i <= totalPages; i++) {
-      const link = document.createElement("a");
-      link.href = "#";
-      link.textContent = i;
-
-      // Highlight the current page link
-      if (i === currentPage) {
-        link.classList.add("active");
-      }
-
-      link.addEventListener("click", function (event) {
-        event.preventDefault();
-        currentPage = i;
-        displayUsers();
-      });
-
-      paginationLinks.appendChild(link);
-    }
-  }
-
-  function deleteUser(userId) {
-    fetch("/users/" + userId, {
-      method: "DELETE",
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to delete user");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        if (data.success) {
-          showAlert("User deleted successfully");
-          fetchUsers();
-        } else {
-          showAlert("Failed to delete user");
-        }
-      })
-      .catch((error) => {
-        console.error("Error deleting user:", error);
-        showAlert("Error deleting user");
-      });
-  }
-
-  function addEditDeleteEventListeners() {
-    document.querySelectorAll(".editUser").forEach((button) => {
-      button.addEventListener("click", function () {
-        const userId = this.dataset.id;
-        const user = usersData.find((user) => user.user_id == userId);
-        document.querySelector("#editUserId").value = user.user_id;
-        document.querySelector("#editUserName").value = user.name;
-        document.querySelector("#editUserEmail").value = user.mail;
-        document.querySelector("#editUserPwd").value = user.password;
-        document.querySelector("#editUserDesignation").value = user.Designation;
-        document.querySelector("#editUserManager").value = user.Manager_id;
-        document.querySelector("#editUserStatus").value = user.status;
-        document.querySelector("#editUserrole").value = user.role_id;
-
-        $("#editModal").modal("show");
-      });
-    });
-
-    document.querySelectorAll(".deleteUser").forEach((button) => {
-      button.addEventListener("click", function () {
-        const userId = this.dataset.id;
-        showConfirm(userId); // Show confirmation modal
-      });
-    });
-  }
-
-  fetchUsers();
-
-  document.getElementById("saveChanges").addEventListener("click", function () {
-    const formData = {
-      user_id: document.querySelector("#editUserId").value,
-      name: document.querySelector("#editUserName").value,
-      mail: document.querySelector("#editUserEmail").value,
-      password: document.querySelector("#editUserPwd").value,
-      Designation: document.querySelector("#editUserDesignation").value,
-      Manager_id: document.querySelector("#editUserManager").value,
-      status: document.querySelector("#editUserStatus").value,
-      role: document.querySelector("#editUserrole").value,
-    };
-
-    const isExistingUser = formData.user_id.trim() !== "";
-    const url = isExistingUser ? "/users" : "/save";
-    fetch(url, {
-      method: isExistingUser ? "PUT" : "POST",
+async function saveProject(project) {
+  try {
+    const response = await fetch("/project-table", {
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(formData),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(
-            isExistingUser ? "Failed to update user" : "Failed to add user"
-          );
-        }
-        return response.json();
-      })
-      .then((data) => {
-        if (data.success) {
-          showAlert(
-            isExistingUser
-              ? "User updated successfully"
-              : "User added successfully"
-          );
-          $("#editModal").modal("hide");
-          fetchUsers();
-        } else {
-          showAlert(
-            isExistingUser ? "Failed to update user" : "Failed to add user"
-          );
-        }
-      })
+      body: JSON.stringify(project),
+    });
 
-      .catch((error) => {
-        console.error("Error:", error);
-        showAlert("Error performing operation");
-      });
-  });
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
 
-  document.getElementById("add_row").addEventListener("click", function () {
-    document.querySelector("#editUserId").value = "";
-    document.querySelector("#editUserName").value = "";
-    document.querySelector("#editUserEmail").value = "";
-    document.querySelector("#editUserPwd").value = "";
-    document.querySelector("#editUserDesignation").value = "";
-    document.querySelector("#editUserManager").value = "";
-    document.querySelector("#editUserStatus").value = "";
-    document.querySelector("#editUserrole").value = "";
+    const result = await response.json();
+    console.log("Project data saved successfully:", result);
+  } catch (error) {
+    console.error("Error saving project data:", error);
+  }
+}
 
-    $("#editModal").modal("show");
-  });
+function handleSaveClick(event) {
+  console.log("Save button clicked"); // Check if the button click event is being triggered
 
-  document.querySelector(".btn-filter").addEventListener("click", function () {
-    const panel = this.closest(".filterable");
-    const filters = panel.querySelectorAll(".filters input");
-    const tbody = panel.querySelector(".table tbody");
-    if (filters[0].disabled) {
-      filters.forEach((filter) => {
-        filter.disabled = false;
-      });
-      filters.forEach((filter) => {
-        filter.focus();
-      });
+  var button = event.target;
+  var row = button.closest("tr");
+  console.log("Row:", row); // Check if the correct row is being selected
+
+  var projectData = {
+    code: row.cells[0].querySelector("input").value,
+    description: row.cells[2].querySelector("input").value,
+    manager: row.cells[6].querySelector("input").value,
+
+    solution: row.cells[3].querySelector("select").value,
+    activityType: row.cells[4].querySelector("select").value,
+    subsidiary: row.cells[5].querySelector("input").value,
+  };
+
+  console.log("Project data:", projectData); // Check if the project data is extracted correctly
+
+  saveProject(projectData);
+}
+
+// Attach event listeners to save buttons for existing rows
+document.querySelectorAll(".saverow").forEach((button) => {
+  button.addEventListener("click", handleSaveClick);
+});
+
+// Add event listener to dynamically add rows
+document.getElementById("addRowBtn1").addEventListener("click", function () {
+  var table = document.getElementById("TableBody");
+  var newRow = table.insertRow(-1); // -1 to insert at the end
+
+  for (var i = 0; i < 7; i++) {
+    var newCell = newRow.insertCell(i);
+    var newInput;
+
+    if (i == 3) {
+      newInput = document.createElement("select");
+      newInput.className = "dropdown";
+      var option1 = document.createElement("option");
+      option1.value = "WEB";
+      option1.textContent = "WEB";
+      var option2 = document.createElement("option");
+      option2.value = "BI";
+      option2.textContent = "BI";
+      var option3 = document.createElement("option");
+      option3.value = "AIML";
+      option3.textContent = "AIML";
+      var option4 = document.createElement("option");
+      option4.value = "ETL";
+      option4.textContent = "ETL";
+      newInput.appendChild(option1);
+      newInput.appendChild(option2);
+      newInput.appendChild(option3);
+      newInput.appendChild(option4);
+    } else if (i == 4) {
+      newInput = document.createElement("select");
+      newInput.className = "dropdown";
+      var option1 = document.createElement("option");
+      option1.value = "Support";
+      option1.textContent = "Support";
+      var option2 = document.createElement("option");
+      option2.value = "Followup";
+      option2.textContent = "Followup";
+      var option3 = document.createElement("option");
+      option3.value = "Miscellaneous";
+      option3.textContent = "Miscellaneous";
+
+      newInput.appendChild(option1);
+      newInput.appendChild(option2);
+      newInput.appendChild(option3);
     } else {
-      filters.forEach((filter) => {
-        filter.value = "";
-        filter.disabled = true;
-      });
-      const noResult = tbody.querySelector(".no-result");
-      if (noResult) {
-        noResult.remove();
-      }
-      tbody.querySelectorAll("tr").forEach((row) => {
-        row.style.display = "";
-      });
-    }
-  });
-
-  document.querySelectorAll(".filterable .filters input").forEach((input) => {
-    input.addEventListener("keyup", function (e) {
-      if (e.key === "Tab") return;
-
-      const inputContent = input.value.toLowerCase();
-      const panel = input.closest(".filterable");
-      const columnIndex = Array.from(
-        panel.querySelectorAll(".filters th")
-      ).indexOf(input.closest("th"));
-      const table = panel.querySelector(".table");
-      const rows = table.querySelectorAll("tbody tr");
-
-      rows.forEach((row) => {
-        const cell = row.querySelectorAll("td")[columnIndex];
-        if (
-          cell &&
-          cell.textContent.toLowerCase().indexOf(inputContent) === -1
-        ) {
-          row.style.display = "none";
-        } else {
-          row.style.display = "";
-        }
-      });
-
-      const noResult = table.querySelector("tbody .no-result");
-      if (noResult) {
-        noResult.remove();
-      }
-      if (Array.from(rows).every((row) => row.style.display === "none")) {
-        const noResultRow = document.createElement("tr");
-        noResultRow.className = "no-result text-center";
-        const noResultCell = document.createElement("td");
-        noResultCell.colSpan = panel.querySelectorAll(".filters th").length;
-        noResultCell.textContent = "No result found";
-        noResultRow.appendChild(noResultCell);
-        table.querySelector("tbody").appendChild(noResultRow);
-      }
-    });
-  });
-
-  document
-    .getElementById("confirmDelete")
-    .addEventListener("click", function () {
-      if (userIdToDelete) {
-        deleteUser(userIdToDelete);
-        $("#confirmModal").modal("hide");
-      }
-    });
-
-  document.getElementById("nextPage").addEventListener("click", function () {
-    if (currentPage < Math.ceil(usersData.length / rowsPerPage)) {
-      currentPage++;
-      displayUsers();
-    }
-  });
-
-  document.getElementById("prevPage").addEventListener("click", function () {
-    if (currentPage > 1) {
-      currentPage--;
-      displayUsers();
-    }
-  });
-
-  function createPagination() {
-    const totalPages = Math.ceil(usersData.length / rowsPerPage);
-    const paginationLinks = document.getElementById("paginationLinks");
-    paginationLinks.innerHTML = "";
-
-    for (let i = 1; i <= totalPages; i++) {
-      const link = document.createElement("a");
-      link.href = "#";
-      link.textContent = i;
-
-      // Highlight the current page link
-      if (i === currentPage) {
-        link.classList.add("active");
-      }
-
-      link.addEventListener("click", function (event) {
-        event.preventDefault();
-        currentPage = i;
-        displayUsers();
-      });
-
-      paginationLinks.appendChild(link);
+      newInput = document.createElement("input");
+      newInput.type = "text";
+      newInput.className = "column-input";
+      newInput.value = i === 0 ? "DEV.I.0.3" : i === 1 ? "Support✍" : "";
     }
 
-    // Add Previous and Next page buttons
-    const prevButton = document.createElement("a");
-    prevButton.href = "#";
-    prevButton.textContent = "«";
-    prevButton.addEventListener("click", function (event) {
-      event.preventDefault();
-      if (currentPage > 1) {
-        currentPage--;
-        displayUsers();
-      }
-    });
-    paginationLinks.insertBefore(prevButton, paginationLinks.firstChild);
-
-    const nextButton = document.createElement("a");
-    nextButton.href = "#";
-    nextButton.textContent = "»";
-    nextButton.addEventListener("click", function (event) {
-      event.preventDefault();
-      if (currentPage < totalPages) {
-        currentPage++;
-        displayUsers();
-      }
-    });
-    paginationLinks.appendChild(nextButton);
+    newCell.appendChild(newInput);
   }
 
-  // Initialize the page
-  fetchUsers();
+  var delCell = newRow.insertCell(7);
+  var delButton = document.createElement("button");
+  var saveButton = document.createElement("button");
+  delButton.textContent = "❌";
+  saveButton.textContent = "✅";
+  delButton.className = "delrow";
+  saveButton.className = "saverow";
+  delCell.appendChild(delButton);
+  delCell.appendChild(saveButton);
+
+  delButton.addEventListener("click", function () {
+    table.deleteRow(newRow.rowIndex);
+  });
+
+  // Add event listener to the new row's save button
+  saveButton.addEventListener("click", handleSaveClick);
 });
+
+let project = [];
+
+document.addEventListener("DOMContentLoaded", () => {
+  fetchproject();
+});
+
+async function fetchproject() {
+  try {
+    const response = await fetch("/project-data");
+    const result = await response.json();
+
+    if (result.success) {
+      project = result.data;
+      saveProject();
+
+      console.log(result);
+    } else {
+      console.error("Failed to fetch user data:", result.message);
+    }
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+  }
+}

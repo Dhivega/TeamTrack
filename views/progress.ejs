@@ -8,18 +8,16 @@
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
   <link rel="icon" href="img/icon.jpg">
   <style>
-     table td {
+  table td {
   word-wrap: break-word;
   white-space: normal;  
   overflow: hidden;     
   text-overflow: ellipsis; 
-  max-width: 100px;   
+  max-width: 200px;   
 } 
-
 table th {
   max-width: 100px; 
 } 
-
     .filterable {
       margin-top: 15px;
     }
@@ -58,14 +56,14 @@ table th {
 <body>
 <header class="wrapper">
   <div>
-    <a>
+    <a href="/week">
       <img src="img/fives-logo-white3.png" alt="Your logo" height="50px" width="80px" id="top-left">
     </a>
   </div>
   <nav class="logo" style="margin-top: -80px; margin-right: 60px">
     <!-- <a href="/projects">Home</a> -->
        <a href="/week" id="activityLink">Activity</a>
-      <a href="/admin" id="demoLink">Users</a>
+      <a href="/demo" id="demoLink">Users</a>
       <a href="/projects" id="projectLink">Projects</a>
       <a href="/progress" id="progressLink">Progress</a>
 
@@ -194,15 +192,26 @@ table th {
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script>
- document.addEventListener("DOMContentLoaded", () => {
+ document.addEventListener("DOMContentLoaded", () => {    
+     // Check for stored user role and update the navbar on page load
+     const storedRoleId = localStorage.getItem("userRoleId");
+            console.log('role id in progress ejs file', storedRoleId);
+            if (storedRoleId) {
+              console.log('role id in progress ejs file', storedRoleId);
+                updateNavbar(parseInt(storedRoleId));
+            } else {
+                // Default behavior if no role ID is found
+                updateNavbar(2);  // Assuming 2 is the default role (user)
+            }
             // Logout link handler
             document.getElementById("logoutLink").addEventListener("click", (event) => {
                 event.preventDefault();
                 window.localStorage.removeItem("userID");
                 window.localStorage.removeItem("userRoleId");
-                window.localStorage.removeItem("userName");
                 window.location.href = event.target.href;
             });
+
+           
 
             // Function to update the navbar based on role ID
             function updateNavbar(roleId) {
@@ -219,29 +228,19 @@ table th {
 
                 // Show only the activity and logout links for users
                 if (roleId === 2) {
-                    activityLink.style.display = "block";
+                    activityLink.style.display = "inline-block";
                 } 
                 // Show all links for admins
                 else if (roleId === 1) {
-                    activityLink.style.display = "block";
-                    demoLink.style.display = "block";
-                    projectLink.style.display = "block";
-                    progressLink.style.display = "block";
+                    activityLink.style.display = "inline-block";
+                    demoLink.style.display = "inline-block";
+                    projectLink.style.display = "inline-block";
+                    progressLink.style.display = "inline-block";
                 }
                 else if (roleId===3){
-                    activityLink.style.display = "block";
-                    progressLink.style.display = "block";
-                    
+                    activityLink.style.display = "inline-block";
+                    progressLink.style.display = "inline-block";
                 }
-            }
-
-            // Check for stored user role and update the navbar on page load
-            const storedRoleId = localStorage.getItem("userRoleId");
-            if (storedRoleId) {
-                updateNavbar(parseInt(storedRoleId));
-            } else {
-                // Default behavior if no role ID is found
-                updateNavbar(2);  // Assuming 2 is the default role (user)
             }
         });
 </script>
