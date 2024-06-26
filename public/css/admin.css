@@ -5,14 +5,16 @@ body,
   font-family: Arial, Helvetica, sans-serif;
   overflow-x: hidden;
   min-height: 100vh;
+  position: relative;
 }
 header {
   background-color: #af007c;
+  width: 100%;
   font-size: 1em;
   height: 80px;
   display: flex;
   justify-content: flex-end;
-  flex: 1;
+  flex: 3;
   text-decoration: none;
 }
 nav {
@@ -40,13 +42,13 @@ header a {
   color: white;
 }
 #logo {
-  flex: 1;
+  flex: 3;
   text-decoration: none;
   font-size: 1.5em;
 }
 nav {
-  flex: 1;
-  float: left;
+  flex: 2;
+  float: right;
   display: flex;
 }
 nav a {
@@ -61,11 +63,12 @@ nav a {
   display: flex;
   justify-content: flex-start;
   display: inline-block;
-  margin-right: 600px;
+  margin-right: 800px;
   height: 80px;
   width: 80px;
   padding-top: 0;
 }
+
 body {
   /* background-image: url(../img/bg.jpg); */
   background-repeat: no-repeat;
