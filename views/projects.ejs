@@ -108,7 +108,7 @@
                   <th><input type="text" class="form-control" placeholder="Subsidiary" disabled name="Subsidiary" required />
                     </th>
                   <th><input type="text" class="form-control" placeholder="Complementary_desc" disabled name="Complementary_desc" required/> </th>
-                  <th><input type="text" class="form-control" placeholder="Project_Manager" disabled name="Project_Manager" required/> </th>
+                  <th><input type="text" class="form-control" placeholder="Project_Manager" disabled name="manager_id" required/> </th>
                   <th style="width: 120px;">Action</th>
                 </tr>
               </thead>
@@ -446,11 +446,8 @@
               </div>
               <div class="form-group">
                 <label for="editProjectManager">Project Manager</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="editProjectManager"
-                />
+                <select class="form-control" id="editProjectManager" name="manager_name"></select>
+                
               </div>
             </form>
           </div>

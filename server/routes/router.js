@@ -53,6 +53,7 @@ router.post("/add-project", userController.addProject);
 router.put("/update-project", userController.updateProject);
 router.delete("/delete-project/:Project_id", userController.deleteProject);
 router.get("/projects-data", userController.getAllProjects);
+router.get("/managers-data", userController.getAllManagers);
 
 router.get("/progress-data", userController.getAllProgress);
 router.put("/update-progress", userController.updateProgress);

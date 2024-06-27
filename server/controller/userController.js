@@ -52,7 +52,7 @@ exports.reg = async (req, res) => {
 
 //log
 exports.log = async (req, res) => {
-  const { email, password, fname } = req.body;
+  const { email, password } = req.body;
 
   try {
     const results = await db.query("SELECT * FROM employees WHERE email = ?", [
@@ -87,34 +87,34 @@ exports.log = async (req, res) => {
 };
 
 // Fetch all users
-exports.getAllUsers = (req, res) => {
-  const query =
-    "SELECT user_id, firstname AS name, email AS mail,password AS password, Designation, Manager, status_id AS status, role_id FROM employees";
-  db.query(query, (err, results) => {
-    if (err) {
-      console.error("Error fetching user data:", err);
-      return res
-        .status(500)
-        .json({ success: false, message: "Failed to fetch user data" });
-    }
-    results.forEach((element) => {
-      element.statusName = element.status == 1 ? "Active" : "In Active";
-      if (element.role_id == 1) {
-        element.roleName = "admin";
-      } else if (element.role_id == 2) {
-        element.roleName = "user";
-      } else if (element.role_id == 3) {
-        element.roleName = "PM";
-      }
-    });
+// exports.getAllUsers = (req, res) => {
+//   const query =
+//     "SELECT user_id, firstname AS name, email AS mail,password AS password, Designation, Manager, status_id AS status, role_id AS role_id FROM employees";
+//   db.query(query, (err, results) => {
+//     if (err) {
+//       console.error("Error fetching user data:", err);
+//       return res
+//         .status(500)
+//         .json({ success: false, message: "Failed to fetch user data" });
+//     }
+//     results.forEach((element) => {
+//       element.statusName = element.status == 1 ? "Active" : "In Active";
+//       if (element.role_id == 1) {
+//         element.roleName = "admin";
+//       } else if (element.role_id == 2 || "undefined") {
+//         element.roleName = "user";
+//       } else if (element.role_id == 3) {
+//         element.roleName = "PM";
+//       }
+//     });
 
-    res.json({ success: true, data: results });
-  });
-};
+//     res.json({ success: true, data: results });
+//   });
+// };
 
 // Add a new user
 exports.addUser = (req, res) => {
-  const { name, mail, password, Designation, Manager, status, role_id } =
+  const { name, mail, password, Designation, manager_name, status, role_id } =
     req.body;
 
   bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
@@ -124,10 +124,18 @@ exports.addUser = (req, res) => {
     }
 
     const query =
-      "INSERT INTO employees (firstname, email,password,Designation, Manager, status_id, role_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+      "INSERT INTO employees (firstname, email,password,Designation, manager_id, status_id, role_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
     db.query(
       query,
-      [name, mail, hashedPassword, Designation, Manager, status || 1, role_id],
+      [
+        name,
+        mail,
+        hashedPassword,
+        Designation,
+        manager_name || 1,
+        status || 2,
+        role_id || 2,
+      ],
       (err, result) => {
         if (err) {
           console.error("Error saving user data:", err);
@@ -138,53 +146,104 @@ exports.addUser = (req, res) => {
     );
   });
 };
+exports.getAllUsers = (req, res) => {
+  const query = `
+    SELECT 
+      e.user_id, 
+      e.firstname AS name, 
+      e.email AS mail, 
+      e.password,
+      e.Designation, 
+      m.manager_id AS manager_id, 
+      m.manager_name AS manager_name, 
+      e.status_id AS status, 
+      e.role_id 
+    FROM 
+      employees e
+      LEFT JOIN manager m ON e.manager_id = m.manager_id
+  `;
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error("Error fetching user data:", err);
+      return res
+        .status(500)
+        .json({ success: false, message: "Failed to fetch user data" });
+    }
+
+    results.forEach((element) => {
+      element.statusName = element.status == 1 ? "Active" : "In Active";
+      if (element.role_id == 1) {
+        element.roleName = "admin";
+      } else if (element.role_id == 3) {
+        element.roleName = "PM";
+      } else {
+        element.roleName = "user";
+      }
+    });
+
+    res.json({ success: true, data: results });
+  });
+};
+exports.getAllManagers = (req, res) => {
+  const query = "SELECT manager_id, manager_name FROM manager";
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error("Error fetching manager data:", err);
+      return res
+        .status(500)
+        .json({ success: false, message: "Failed to fetch manager data" });
+    }
+
+    res.json({ success: true, data: results });
+  });
+};
 
 // Update a user
 exports.updateUser = (req, res) => {
-  const { user_id, name, mail, password, Designation, Manager, status, role } =
-    req.body;
+  const {
+    user_id,
+    name,
+    mail,
+    password,
+    Designation,
+    manager_name,
+    status,
+    role,
+  } = req.body;
 
-  if (password) {
-    bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
-      if (err) {
-        console.error("Error hashing password:", err);
-        return res
-          .status(500)
-          .json({ success: false, message: "Error updating user data" });
-      }
+  // First, fetch the existing user data from the database
+  const getUserQuery = "SELECT password FROM employees WHERE user_id = ?";
+  db.query(getUserQuery, [user_id], (err, results) => {
+    if (err) {
+      console.error("Error fetching user data:", err);
+      return res
+        .status(500)
+        .json({ success: false, message: "Error updating user data" });
+    }
 
+    if (results.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    const existingPassword = results[0].password;
+
+    const updateUserQuery = (hashedPassword = existingPassword) => {
       const query =
-        "UPDATE employees SET firstname = ?, email = ?, password = ?, Designation = ?, Manager = ?, status_id = ?, role_id = ? WHERE user_id = ?";
-      db.query(
-        query,
-        [
-          name,
-          mail,
-          hashedPassword,
-          Designation,
-          Manager,
-          status,
-          role || null,
-          user_id,
-        ],
-        (err, result) => {
-          if (err) {
-            console.error("Error updating user data:", err);
-            return res
-              .status(500)
-              .json({ success: false, message: "Error updating user data" });
-          }
-          res.json({ success: true, message: "User updated successfully!" });
-        }
-      );
-    });
-  } else {
-    const query =
-      "UPDATE employees SET firstname = ?, email = ?, Designation = ?, Manager = ?, status_id = ?, role_id = ? WHERE user_id = ?";
-    db.query(
-      query,
-      [name, mail, Designation, Manager, status, role || null, user_id],
-      (err, result) => {
+        "UPDATE employees SET firstname = ?, email = ?, password = ?, Designation = ?, manager_id = ?, status_id = ?, role_id = ? WHERE user_id = ?";
+      const queryParams = [
+        name,
+        mail,
+        hashedPassword,
+        Designation,
+        manager_name,
+        status,
+        role || null,
+        user_id,
+      ];
+
+      db.query(query, queryParams, (err, result) => {
         if (err) {
           console.error("Error updating user data:", err);
           return res
@@ -192,9 +251,23 @@ exports.updateUser = (req, res) => {
             .json({ success: false, message: "Error updating user data" });
         }
         res.json({ success: true, message: "User updated successfully!" });
-      }
-    );
-  }
+      });
+    };
+
+    if (password && password !== existingPassword) {
+      bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
+        if (err) {
+          console.error("Error hashing password:", err);
+          return res
+            .status(500)
+            .json({ success: false, message: "Error updating user data" });
+        }
+        updateUserQuery(hashedPassword);
+      });
+    } else {
+      updateUserQuery();
+    }
+  });
 };
 
 // Delete a user
@@ -260,10 +333,11 @@ exports.updateProject = async (req, res) => {
     subsidiary,
     Complementary_desc,
     Project_id,
+    manager_id,
   } = req.body;
 
   try {
-    const sql = `UPDATE projects SET code=?, Description=?, Project_manager=?, Solution=?, Activity_type=?, subsidiary=?, Complementary_desc=? WHERE Project_id=?`;
+    const sql = `UPDATE projects SET code=?, Description=?, Project_manager=?, Solution=?, Activity_type=?, subsidiary=?, Complementary_desc=?, manager_id=? WHERE Project_id=?`;
     const values = [
       code,
       Description,
@@ -272,6 +346,7 @@ exports.updateProject = async (req, res) => {
       Activity_type,
       subsidiary,
       Complementary_desc,
+      manager_id,
       Project_id,
     ];
 
@@ -306,7 +381,16 @@ exports.deleteProject = async (req, res) => {
 // Fetch all projects
 exports.getAllProjects = async (req, res) => {
   try {
-    const query = `SELECT * FROM projects  WHERE code NOT IN ('DEV.H.01', 'DEV.I.01', 'DEV.I.02')`;
+    const query = `SELECT
+     p.code,
+     p.Description,
+     p.Solution,
+     p.Activity_type,
+     p.subsidiary,
+     p.Complementary_desc,
+     m.manager_id AS manager_id, 
+    m.manager_name AS manager_name
+    FROM projects p LEFT JOIN manager m ON p.manager_id = m.manager_id WHERE code NOT IN ('DEV.H.01', 'DEV.I.01', 'DEV.I.02')`;
     const projects = await db.query(query);
 
     res.status(200).json({ success: true, data: projects });
@@ -319,7 +403,8 @@ exports.getAllProjects = async (req, res) => {
 // Fetch all progress
 exports.getAllProgress = async (req, res) => {
   try {
-    const query = `SELECT * FROM projects  WHERE code NOT IN ('DEV.H.01', 'DEV.I.01', 'DEV.I.02')`;
+    const query = `;
+    SELECT * FROM projects  WHERE code NOT IN ('DEV.H.01', 'DEV.I.01', 'DEV.I.02')`;
     const projects = await db.query(query);
 
     res.status(200).json({ success: true, data: projects });
@@ -557,11 +642,11 @@ exports.fetchWeeklyReportByUserYearMonth = (req, res) => {
       }
 
       const projectDetailsQuery = `
-      SELECT code, 
-             Description AS description, 
-             Solution AS solution, 
-             Activity_type AS activity_type, 
-             subsidiary, 
+      SELECT code,
+             Description AS description,
+             Solution AS solution,
+             Activity_type AS activity_type,
+             subsidiary,
              Complementary_desc AS Complementary_desc
       FROM projects
       WHERE code IN (?)

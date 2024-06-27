@@ -11,13 +11,13 @@
   table td {
   word-wrap: break-word;
   white-space: normal;  
-  overflow: hidden;     
-  text-overflow: ellipsis; 
-  max-width: 200px;   
-} 
+  overflow: hidden;    
+  text-overflow: ellipsis;
+  max-width: 200px;  
+}
 table th {
-  max-width: 100px; 
-} 
+  max-width: 100px;
+}
     .filterable {
       margin-top: 15px;
     }
@@ -66,7 +66,7 @@ table th {
       <a href="/demo" id="demoLink">Users</a>
       <a href="/projects" id="projectLink">Projects</a>
       <a href="/progress" id="progressLink">Progress</a>
-
+ 
       <a href="/login" id="logout-link">Logout</a>
   </nav>
   <!-- <center> <h4 style="margin-right:0px;margin-top:-50px; color: white;">ADMINISTRATOR</h4></center> -->
@@ -103,7 +103,7 @@ table th {
             <!-- Dynamic rows will be appended here -->
           </tbody>
         </table>
-        
+       
       </div>
     </div>
   </div>
@@ -112,7 +112,7 @@ table th {
   <button id="prevPage" disabled> Previous</button>
   <button id="nextPage" disabled>Next</button>
 </div>
-
+ 
 <!-- Edit/Add Modal -->
 <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel">
   <div class="modal-dialog" role="document">
@@ -149,7 +149,7 @@ table th {
             <label for="editProjectCritical">Critical</label>
             <select class="form-control" id="editProjectCritical">
               <option value="">Select Critical</option>
-
+ 
               <option value="Easy">Easy</option>
               <option value="Medium">Medium</option>
               <option value="Hard">Hard</option>
@@ -159,7 +159,7 @@ table th {
             <label for="editProjectWeather">Weather</label>
             <select class="form-control" id="editProjectWeather">
               <option value="">Select Weather</option>
-
+ 
               <option value="Green">Green</option>
               <option value="Orange">Orange</option>
               <option value="Red">Red</option>
@@ -210,26 +210,26 @@ table th {
                 window.localStorage.removeItem("userRoleId");
                 window.location.href = event.target.href;
             });
-
+ 
            
-
+ 
             // Function to update the navbar based on role ID
             function updateNavbar(roleId) {
                 const activityLink = document.getElementById("activityLink");
                 const demoLink = document.getElementById("demoLink");
                 const projectLink = document.getElementById("projectLink");
                 const progressLink = document.getElementById("progressLink");
-
+ 
                 // Hide all links initially
                 activityLink.style.display = "none";
                 demoLink.style.display = "none";
                 projectLink.style.display = "none";
                 progressLink.style.display = "none";
-
+ 
                 // Show only the activity and logout links for users
                 if (roleId === 2) {
                     activityLink.style.display = "inline-block";
-                } 
+                }
                 // Show all links for admins
                 else if (roleId === 1) {
                     activityLink.style.display = "inline-block";
@@ -247,3 +247,4 @@ table th {
 <script src="js/progress.js"></script>
 </body>
 </html>
+ 

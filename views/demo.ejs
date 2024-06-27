@@ -105,14 +105,14 @@ table th {
                                 <span class="glyphicon glyphicon-filter" style="padding: 5px; margin-left: 2PX;"></span>
                             </button>
                         </div>
-                        <div class="pull-right">
+                        <!-- <div class="pull-right">
                             <select id="rowsValue">
                                 <option selected value="3">3</option>
                                 <option value="5">5</option>
                                 <option value="10">10</option>
                                 <option value="15">15</option>
                             </select>
-                        </div>
+                        </div> -->
                     </div>
                     <table class="table table-bordered table-hover" id="tab_logic">
                         <thead>
@@ -122,7 +122,7 @@ table th {
                                 <th><input type="email" class="form-control" placeholder="E Mail" disabled name="email"/></th>
                                 <th><input type="password" class="form-control" placeholder="Password" disabled name="Password"/></th>
                                 <th><input type="text" class="form-control" placeholder="Designation" disabled name="Designation"/></th>
-                                <th><input type="text" class="form-control" placeholder="Manager" disabled name="Manager"/></th>
+                                <th><input type="text" class="form-control" placeholder="Manager" disabled name="manager_id"/></th>
                                 <th><input type="text" class="form-control" placeholder="Status" disabled name="status" /></th>
                                 <th><input type="text" class="form-control" placeholder="role" disabled name="role" /></th>
                                 <th><input type="text" class="form-control" placeholder="Action" disabled /></th>
@@ -147,9 +147,8 @@ table th {
         <button id="prevPage" style="padding: 7px;">Previous</button>
         <button id="nextPage"style="padding: 7px;">Next</button>
       </div></center> -->
-     <center> <div class="pagination" id="paginationLinks">
-        <!-- Numbered links will be dynamically inserted here -->
-    </div></center>
+     <!-- <center> <div class="pagination" id="paginationLinks">
+    </div></center> -->
     
     <footer>
         <div id="copyright">&#169 ALL RIGHTS RESERVED</div>
@@ -187,7 +186,7 @@ table th {
                         <div class="form-group">
                             <label for="editUserManager">Manager</label>
                             <!-- <input type="text" class="form-control" id="editUserManager" name="Manager"> -->
-                            <select class="form-control" id="editUserManager" name="Manager"></select>
+                            <select class="form-control" id="editUserManager" name="manager_name"></select>
                         </div>
                         <div class="form-group">
                             <label for="editUserStatus">Status</label>
