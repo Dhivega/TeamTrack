@@ -5,16 +5,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const projectForm = document.getElementById("projectForm");
   let editRow = null;
   let projects = [];
-  let currentPage = 1;
-  const rowsPerPage = 3;
 
   function clearForm() {
     projectForm.reset();
-  }
-
-  function addNewRow(project) {
-    projects.push(project);
-    displayProjects();
   }
 
   addProjectButton.addEventListener("click", function () {
@@ -64,7 +57,7 @@ document.addEventListener("DOMContentLoaded", function () {
         .then((response) => response.json())
         .then((data) => {
           if (data.success) {
-            alert("Progress updated succesfully");
+            alert("Progress updated successfully");
             console.log("Progress updated successfully:", data.message);
           } else {
             console.error("Error updating project:", data.message);
@@ -138,22 +131,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
 
-  document.getElementById("prevPage").addEventListener("click", function () {
-    if (currentPage > 1) {
-      currentPage--;
-      displayProjects();
-      fetchProgress();
-    }
-  });
-
-  document.getElementById("nextPage").addEventListener("click", function () {
-    if (currentPage * rowsPerPage < projects.length) {
-      currentPage++;
-      displayProjects();
-      fetchProgress();
-    }
-  });
-
   function fetchProgress() {
     fetch("/progress-data")
       .then((response) => response.json())
@@ -173,33 +150,27 @@ document.addEventListener("DOMContentLoaded", function () {
   function displayProjects() {
     const tbody = document.querySelector("#tab_logic tbody");
     tbody.innerHTML = "";
-    const start = (currentPage - 1) * rowsPerPage;
-    const end = Math.min(start + rowsPerPage, projects.length);
 
-    for (let i = start; i < end; i++) {
-      const project = projects[i];
+    projects.forEach((project) => {
       const newRow = document.createElement("tr");
       newRow.innerHTML = `
-<td>${project.code}</td>
-<td>${project.Description}</td>
-<td>${project.start_date}</td>
-<td>${project.end_date}</td>
-<td>${project.actual_step}</td>
-<td>${project.critical}</td>
-<td>${project.weather}</td>
-<td>${project.past_two_weaks_review}</td>
-<td>${project.coming_two_weaks_review}</td>
-<td>${project.major_problem}</td>
-<td>
-  <button class="btn btn-xs btn-info editrow">Edit</button>
-</td>
-`;
+        <td>${project.code}</td>
+        <td>${project.Description}</td>
+        <td>${project.start_date}</td>
+        <td>${project.end_date}</td>
+        <td>${project.actual_step}</td>
+        <td>${project.critical}</td>
+        <td>${project.weather}</td>
+        <td>${project.past_two_weaks_review}</td>
+        <td>${project.coming_two_weaks_review}</td>
+        <td>${project.major_problem}</td>
+        <td>
+          <button class="btn btn-xs btn-info editrow">Edit</button>
+        </td>
+      `;
       newRow.dataset.id = project.Project_id;
       tbody.appendChild(newRow);
-    }
-
-    document.getElementById("prevPage").disabled = currentPage === 1;
-    document.getElementById("nextPage").disabled = end >= projects.length;
+    });
   }
 
   document.querySelectorAll(".dropdown-item").forEach((item) => {

@@ -88,17 +88,17 @@ document.addEventListener("DOMContentLoaded", function () {
       tbody.appendChild(newRow);
     });
 
-    updatePaginationControls();
+    // updatePaginationControls();
   }
 
-  function updatePaginationControls() {
-    const prevButton = document.getElementById("prevPage");
-    const nextButton = document.getElementById("nextPage");
+  // function updatePaginationControls() {
+  //   const prevButton = document.getElementById("prevPage");
+  //   const nextButton = document.getElementById("nextPage");
 
-    prevButton.disabled = currentPage === 1;
-    nextButton.disabled =
-      currentPage === Math.ceil(projects.length / rowsPerPage);
-  }
+  //   prevButton.disabled = currentPage === 1;
+  //   nextButton.disabled =
+  //     currentPage === Math.ceil(projects.length / rowsPerPage);
+  // }
 
   addProjectButton.addEventListener("click", function () {
     clearForm();
@@ -191,39 +191,44 @@ document.addEventListener("DOMContentLoaded", function () {
         editModal.modal("show");
       } else if (event.target.classList.contains("delrow")) {
         const projectId = event.target.closest("tr").dataset.id;
-        fetch(`/delete-project/${projectId}`, {
-          method: "DELETE",
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.success) {
-              alert("Project deleted successfully");
-              projects = projects.filter(
-                (project) => project.Project_id != projectId
-              );
-              displayProjects();
-              fetchProjects();
-            }
+        const confirmDelete = confirm(
+          "Are you sure you want to delete this project?"
+        );
+        if (confirmDelete) {
+          fetch(`/delete-project/${projectId}`, {
+            method: "DELETE",
           })
-          .catch((error) => {
-            console.error("Error:", error);
-          });
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.success) {
+                alert("Project deleted successfully");
+                projects = projects.filter(
+                  (project) => project.Project_id != projectId
+                );
+                displayProjects();
+                fetchProjects();
+              }
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
+        }
       }
     });
 
-  document.getElementById("prevPage").addEventListener("click", function () {
-    if (currentPage > 1) {
-      currentPage--;
-      displayProjects();
-    }
-  });
+  // document.getElementById("prevPage").addEventListener("click", function () {
+  //   if (currentPage > 1) {
+  //     currentPage--;
+  //     displayProjects();
+  //   }
+  // });
 
-  document.getElementById("nextPage").addEventListener("click", function () {
-    if (currentPage < Math.ceil(projects.length / rowsPerPage)) {
-      currentPage++;
-      displayProjects();
-    }
-  });
+  // document.getElementById("nextPage").addEventListener("click", function () {
+  //   if (currentPage < Math.ceil(projects.length / rowsPerPage)) {
+  //     currentPage++;
+  //     displayProjects();
+  //   }
+  // });
 
   fetchProjects();
 
