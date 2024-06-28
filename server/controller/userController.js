@@ -292,7 +292,7 @@ exports.addProject = async (req, res) => {
   const {
     code,
     Description,
-    Project_manager,
+    manager_name,
     Solution,
     Activity_type,
     subsidiary,
@@ -300,11 +300,11 @@ exports.addProject = async (req, res) => {
   } = req.body;
 
   try {
-    const sql = `INSERT INTO projects (code, Description, Project_manager, Solution, Activity_type, subsidiary,Complementary_desc) VALUES (?, ?, ?, ?, ?, ?,?)`;
+    const sql = `INSERT INTO projects (code, Description, manager_id, Solution, Activity_type, subsidiary,Complementary_desc) VALUES (?, ?, ?, ?, ?, ?,?)`;
     const values = [
       code,
       Description,
-      Project_manager,
+      manager_name,
       Solution,
       Activity_type,
       subsidiary,
@@ -327,26 +327,26 @@ exports.updateProject = async (req, res) => {
   const {
     code,
     Description,
-    Project_manager,
+    manager_name,
     Solution,
     Activity_type,
     subsidiary,
     Complementary_desc,
+    // Ensure this is included
     Project_id,
-    manager_id,
   } = req.body;
 
   try {
-    const sql = `UPDATE projects SET code=?, Description=?, Project_manager=?, Solution=?, Activity_type=?, subsidiary=?, Complementary_desc=?, manager_id=? WHERE Project_id=?`;
+    const sql = `UPDATE projects SET code=?, Description=?, manager_id=?, Solution=?, Activity_type=?, subsidiary=?, Complementary_desc=? WHERE Project_id=?`;
     const values = [
       code,
       Description,
-      Project_manager,
+      manager_name,
       Solution,
       Activity_type,
       subsidiary,
       Complementary_desc,
-      manager_id,
+      // Ensure this is correctly placed
       Project_id,
     ];
 
@@ -389,7 +389,8 @@ exports.getAllProjects = async (req, res) => {
      p.subsidiary,
      p.Complementary_desc,
      m.manager_id AS manager_id, 
-    m.manager_name AS manager_name
+    m.manager_name AS manager_name,
+    p.Project_id
     FROM projects p LEFT JOIN manager m ON p.manager_id = m.manager_id WHERE code NOT IN ('DEV.H.01', 'DEV.I.01', 'DEV.I.02')`;
     const projects = await db.query(query);
 
@@ -400,11 +401,9 @@ exports.getAllProjects = async (req, res) => {
   }
 };
 
-// Fetch all progress
 exports.getAllProgress = async (req, res) => {
   try {
-    const query = `;
-    SELECT * FROM projects  WHERE code NOT IN ('DEV.H.01', 'DEV.I.01', 'DEV.I.02')`;
+    const query = `SELECT * FROM projects  WHERE code NOT IN ('DEV.H.01', 'DEV.I.01', 'DEV.I.02')`;
     const projects = await db.query(query);
 
     res.status(200).json({ success: true, data: projects });
