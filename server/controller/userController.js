@@ -399,12 +399,112 @@ exports.deleteUser = (req, res) => {
 };
 //admin projects
 
-// Add a new project
+// // Add a new project
+// exports.addProject = async (req, res) => {
+//   const {
+//     code,
+//     Description,
+//     Project_manager,
+//     Solution,
+//     Activity_type,
+//     subsidiary,
+//     Complementary_desc,
+//   } = req.body;
+
+//   try {
+//     const sql = `INSERT INTO projects (code, Description, Project_manager, Solution, Activity_type, subsidiary,Complementary_desc) VALUES (?, ?, ?, ?, ?, ?,?)`;
+//     const values = [
+//       code,
+//       Description,
+//       Project_manager,
+//       Solution,
+//       Activity_type,
+//       subsidiary,
+//       Complementary_desc,
+//     ];
+
+//     await db.query(sql, values);
+
+//     res
+//       .status(201)
+//       .json({ success: true, message: "Project added successfully" });
+//   } catch (error) {
+//     console.error("Error adding project:", error);
+//     res.status(500).json({ success: false, message: "Internal Server Error" });
+//   }
+// };
+
+// // Update a project
+// exports.updateProject = async (req, res) => {
+//   const {
+//     code,
+//     Description,
+//     Project_manager,
+//     Solution,
+//     Activity_type,
+//     subsidiary,
+//     Complementary_desc,
+//     Project_id,
+//   } = req.body;
+
+//   try {
+//     const sql = `UPDATE projects SET code=?, Description=?, Project_manager=?, Solution=?, Activity_type=?, subsidiary=?, Complementary_desc=? WHERE Project_id=?`;
+//     const values = [
+//       code,
+//       Description,
+//       Project_manager,
+//       Solution,
+//       Activity_type,
+//       subsidiary,
+//       Complementary_desc,
+//       Project_id,
+//     ];
+
+//     await db.query(sql, values);
+
+//     res
+//       .status(200)
+//       .json({ success: true, message: "Project updated successfully" });
+//   } catch (error) {
+//     console.error("Error updating project:", error);
+//     res.status(500).json({ success: false, message: "Internal Server Error" });
+//   }
+// };
+
+// // Delete a project
+// exports.deleteProject = async (req, res) => {
+//   const Project_id = req.params.Project_id;
+
+//   try {
+//     const sql = `DELETE FROM projects WHERE Project_id=?`;
+//     await db.query(sql, [Project_id]);
+
+//     res
+//       .status(200)
+//       .json({ success: true, message: "Project deleted successfully" });
+//   } catch (error) {
+//     console.error("Error deleting project:", error);
+//     res.status(500).json({ success: false, message: "Internal Server Error" });
+//   }
+// };
+
+// // Fetch all projects
+// exports.getAllProjects = async (req, res) => {
+//   try {
+//     const query = `SELECT * FROM projects  WHERE code NOT IN ('DEV.H.01', 'DEV.I.01', 'DEV.I.02')`;
+//     const projects = await db.query(query);
+
+//     res.status(200).json({ success: true, data: projects });
+//   } catch (error) {
+//     console.error("Error fetching projects:", error);
+//     res.status(500).json({ success: false, message: "Internal Server Error" });
+//   }
+// };
 exports.addProject = async (req, res) => {
   const {
     code,
     Description,
-    Project_manager,
+    manager_name,
     Solution,
     Activity_type,
     subsidiary,
@@ -412,11 +512,11 @@ exports.addProject = async (req, res) => {
   } = req.body;
 
   try {
-    const sql = `INSERT INTO projects (code, Description, Project_manager, Solution, Activity_type, subsidiary,Complementary_desc) VALUES (?, ?, ?, ?, ?, ?,?)`;
+    const sql = `INSERT INTO projects (code, Description, manager_id, Solution, Activity_type, subsidiary,Complementary_desc) VALUES (?, ?, ?, ?, ?, ?,?)`;
     const values = [
       code,
       Description,
-      Project_manager,
+      manager_name,
       Solution,
       Activity_type,
       subsidiary,
@@ -439,24 +539,26 @@ exports.updateProject = async (req, res) => {
   const {
     code,
     Description,
-    Project_manager,
+    manager_name,
     Solution,
     Activity_type,
     subsidiary,
     Complementary_desc,
+    // Ensure this is included
     Project_id,
   } = req.body;
 
   try {
-    const sql = `UPDATE projects SET code=?, Description=?, Project_manager=?, Solution=?, Activity_type=?, subsidiary=?, Complementary_desc=? WHERE Project_id=?`;
+    const sql = `UPDATE projects SET code=?, Description=?, manager_id=?, Solution=?, Activity_type=?, subsidiary=?, Complementary_desc=? WHERE Project_id=?`;
     const values = [
       code,
       Description,
-      Project_manager,
+      manager_name,
       Solution,
       Activity_type,
       subsidiary,
       Complementary_desc,
+      // Ensure this is correctly placed
       Project_id,
     ];
 
@@ -491,7 +593,17 @@ exports.deleteProject = async (req, res) => {
 // Fetch all projects
 exports.getAllProjects = async (req, res) => {
   try {
-    const query = `SELECT * FROM projects  WHERE code NOT IN ('DEV.H.01', 'DEV.I.01', 'DEV.I.02')`;
+    const query = `SELECT
+     p.code,
+     p.Description,
+     p.Solution,
+     p.Activity_type,
+     p.subsidiary,
+     p.Complementary_desc,
+     m.manager_id AS manager_id,
+    m.manager_name AS manager_name,
+    p.Project_id
+    FROM projects p LEFT JOIN manager m ON p.manager_id = m.manager_id WHERE code NOT IN ('DEV.H.01', 'DEV.I.01', 'DEV.I.02')`;
     const projects = await db.query(query);
 
     res.status(200).json({ success: true, data: projects });
@@ -500,7 +612,6 @@ exports.getAllProjects = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
-
 // Fetch all progress
 exports.getAllProgress = async (req, res) => {
   try {
