@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", function () {
   let projects = [];
   let managersData = [];
   let currentPage = 1;
-  const rowsPerPage = 10;
+  const rowsPerPage = 100;
 
   function clearForm() {
     projectForm.reset();
@@ -148,24 +148,29 @@ document.addEventListener("DOMContentLoaded", function () {
         editModal.modal("show");
       } else if (event.target.classList.contains("delrow")) {
         const projectId = event.target.closest("tr").dataset.id;
-        fetch(`/delete-project/${projectId}`, {
-          method: "DELETE",
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.success) {
-              alert("Project deleted successfully");
-              projects = projects.filter(
-                (project) => project.Project_id != projectId
-              );
-              displayProjects();
-              fetchProjects();
-              populateManagerDropdown();
-            }
+        const confirmDelete = confirm(
+          "Are you sure you want to delete this project?"
+        );
+        if (confirmDelete) {
+          fetch(`/delete-project/${projectId}`, {
+            method: "DELETE",
           })
-          .catch((error) => {
-            console.error("Error:", error);
-          });
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.success) {
+                alert("Project deleted successfully");
+                projects = projects.filter(
+                  (project) => project.Project_id != projectId
+                );
+                displayProjects();
+                fetchProjects();
+                populateManagerDropdown();
+              }
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
+        }
       }
     });
 

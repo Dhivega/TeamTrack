@@ -350,7 +350,7 @@ exports.updateUser = (req, res) => {
         mail,
         hashedPassword,
         Designation,
-        manager_name,
+        manager_name || "4",
         status,
         role || null,
         user_id,
@@ -544,7 +544,6 @@ exports.updateProject = async (req, res) => {
     Activity_type,
     subsidiary,
     Complementary_desc,
-    // Ensure this is included
     Project_id,
   } = req.body;
 
@@ -558,7 +557,6 @@ exports.updateProject = async (req, res) => {
       Activity_type,
       subsidiary,
       Complementary_desc,
-      // Ensure this is correctly placed
       Project_id,
     ];
 
@@ -603,7 +601,7 @@ exports.getAllProjects = async (req, res) => {
      m.manager_id AS manager_id,
     m.manager_name AS manager_name,
     p.Project_id
-    FROM projects p LEFT JOIN manager m ON p.manager_id = m.manager_id WHERE code NOT IN ('DEV.H.01', 'DEV.I.01', 'DEV.I.02')`;
+    FROM projects p LEFT JOIN manager m ON p.manager_id = m.manager_id `;
     const projects = await db.query(query);
 
     res.status(200).json({ success: true, data: projects });
@@ -615,7 +613,7 @@ exports.getAllProjects = async (req, res) => {
 // Fetch all progress
 exports.getAllProgress = async (req, res) => {
   try {
-    const query = `SELECT * FROM projects  WHERE code NOT IN ('DEV.H.01', 'DEV.I.01', 'DEV.I.02')`;
+    const query = `SELECT * FROM projects `;
     const projects = await db.query(query);
 
     res.status(200).json({ success: true, data: projects });
@@ -702,17 +700,128 @@ exports.getProj = (req, res) => {
   });
 };
 
+// exports.saveReport = (req, res) => {
+//   const {
+//     year,
+//     month,
+//     reportData,
+//     weekno1,
+//     weekno2,
+//     weekno3,
+//     weekno4,
+//     weekno5,
+//   } = req.body;
+//   console.log(req.body);
+
+//   if (!reportData || !Array.isArray(reportData) || reportData.length === 0) {
+//     return res
+//       .status(400)
+//       .json({ success: false, message: "No report data provided" });
+//   }
+
+//   const insertQuery = `
+//     INSERT INTO weekly_report (user_id, code, year, month, weekno1, weekno2, weekno3, weekno4, weekno5, data1, data2, data3, data4, data5)
+//     VALUES ?
+//   `;
+
+//   const updateQuery = `
+//     UPDATE weekly_report
+//     SET weekno1 = ?, weekno2 = ?, weekno3 = ?, weekno4 = ?, weekno5 = ?, data1 = ?, data2 = ?, data3 = ?, data4 = ?, data5 = ?
+//     WHERE user_id = ? AND year = ? AND month = ? AND code = ?
+//   `;
+
+//   const checkQuery = `
+//     SELECT report_id FROM weekly_report
+//     WHERE user_id = ? AND year = ? AND month = ? AND code = ?
+//   `;
+
+//   const insertValues = [];
+//   const updatePromises = [];
+
+//   reportData.forEach((row) => {
+//     const { user_id, code, data1, data2, data3, data4, data5 } = row;
+
+//     const updateValues = [
+//       weekno1,
+//       weekno2,
+//       weekno3,
+//       weekno4,
+//       weekno5,
+//       data1 || "",
+//       data2 || "",
+//       data3 || "",
+//       data4 || "",
+//       data5 || "",
+//       user_id,
+//       year,
+//       month,
+//       code,
+//     ];
+
+//     updatePromises.push(
+//       new Promise((resolve, reject) => {
+//         db.query(checkQuery, [user_id, year, month, code], (error, results) => {
+//           if (error) {
+//             return reject(error);
+//           }
+//           if (results.length > 0) {
+//             db.query(updateQuery, updateValues, (updateError) => {
+//               if (updateError) {
+//                 return reject(updateError);
+//               }
+//               resolve();
+//             });
+//           } else {
+//             insertValues.push([
+//               user_id || null,
+//               code || null,
+//               year,
+//               month,
+//               weekno1,
+//               weekno2,
+//               weekno3,
+//               weekno4,
+//               weekno5,
+//               data1 || "",
+//               data2 || "",
+//               data3 || "",
+//               data4 || "",
+//               data5 || "",
+//             ]);
+//             resolve();
+//           }
+//         });
+//       })
+//     );
+//   });
+
+//   Promise.all(updatePromises)
+//     .then(() => {
+//       if (insertValues.length > 0) {
+//         db.query(insertQuery, [insertValues], (insertError, results) => {
+//           if (insertError) {
+//             console.error("Error inserting data:", insertError);
+//             return res
+//               .status(500)
+//               .json({ success: false, message: "Failed to save report" });
+//           }
+//           res.json({ success: true, message: "Report saved successfully!" });
+//         });
+//       } else {
+//         res.json({ success: true, message: "Report updated successfully!" });
+//       }
+//     })
+//     .catch((error) => {
+//       console.error("Error saving report:", error);
+//       res
+//         .status(500)
+//         .json({ success: false, message: "Failed to save report" });
+//     });
+// };
+
 exports.saveReport = (req, res) => {
-  const {
-    year,
-    month,
-    reportData,
-    weekno1,
-    weekno2,
-    weekno3,
-    weekno4,
-    weekno5,
-  } = req.body;
+  console.log(req);
+  const { year, month, reportData } = req.body;
   console.log(req.body);
 
   if (!reportData || !Array.isArray(reportData) || reportData.length === 0) {
@@ -722,77 +831,58 @@ exports.saveReport = (req, res) => {
   }
 
   const insertQuery = `
-    INSERT INTO weekly_report (user_id, code, year, month, weekno1, weekno2, weekno3, weekno4, weekno5, data1, data2, data3, data4, data5)
+    INSERT INTO weekly_report (user_id, code, year, month, weekno, data)
     VALUES ?
   `;
 
   const updateQuery = `
     UPDATE weekly_report
-    SET weekno1 = ?, weekno2 = ?, weekno3 = ?, weekno4 = ?, weekno5 = ?, data1 = ?, data2 = ?, data3 = ?, data4 = ?, data5 = ?
-    WHERE user_id = ? AND year = ? AND month = ? AND code = ?
+    SET data = ?
+    WHERE user_id = ? AND year = ? AND month = ? AND code = ? AND weekno = ?
   `;
 
   const checkQuery = `
     SELECT report_id FROM weekly_report
-    WHERE user_id = ? AND year = ? AND month = ? AND code = ?
+    WHERE user_id = ? AND year = ? AND month = ? AND code = ? AND weekno = ?
   `;
 
   const insertValues = [];
   const updatePromises = [];
 
   reportData.forEach((row) => {
-    const { user_id, code, data1, data2, data3, data4, data5 } = row;
+    const { user_id, code, weekno, data } = row;
 
-    const updateValues = [
-      weekno1,
-      weekno2,
-      weekno3,
-      weekno4,
-      weekno5,
-      data1 || "",
-      data2 || "",
-      data3 || "",
-      data4 || "",
-      data5 || "",
-      user_id,
-      year,
-      month,
-      code,
-    ];
+    const updateValues = [data || "", user_id, year, month, code, weekno];
 
     updatePromises.push(
       new Promise((resolve, reject) => {
-        db.query(checkQuery, [user_id, year, month, code], (error, results) => {
-          if (error) {
-            return reject(error);
-          }
-          if (results.length > 0) {
-            db.query(updateQuery, updateValues, (updateError) => {
-              if (updateError) {
-                return reject(updateError);
-              }
+        db.query(
+          checkQuery,
+          [user_id, year, month, code, weekno],
+          (error, results) => {
+            if (error) {
+              return reject(error);
+            }
+            if (results.length > 0) {
+              db.query(updateQuery, updateValues, (updateError) => {
+                if (updateError) {
+                  return reject(updateError);
+                }
+                resolve();
+              });
+            } else {
+              insertValues.push([
+                user_id || null,
+                code || null,
+                year,
+                month,
+                weekno,
+                data || "",
+              ]);
               resolve();
-            });
-          } else {
-            insertValues.push([
-              user_id || null,
-              code || null,
-              year,
-              month,
-              weekno1,
-              weekno2,
-              weekno3,
-              weekno4,
-              weekno5,
-              data1 || "",
-              data2 || "",
-              data3 || "",
-              data4 || "",
-              data5 || "",
-            ]);
-            resolve();
+            }
           }
-        });
+        );
       })
     );
   });

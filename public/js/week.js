@@ -217,14 +217,81 @@ function generateOptions(values) {
     .join("");
 }
 
+// async function saveReport() {
+//   const year = document.getElementById("year").value;
+//   const month = document.getElementById("month").value;
+//   const weekno1 = document.getElementById("weekcell1").textContent;
+//   const weekno2 = document.getElementById("weekcell2").textContent;
+//   const weekno3 = document.getElementById("weekcell3").textContent;
+//   const weekno4 = document.getElementById("weekcell4").textContent;
+//   const weekno5 = document.getElementById("weekcell5").textContent;
+
+//   const table = document.getElementById("tab_logic");
+//   const reportData = [];
+//   const rows = table.querySelectorAll("tbody tr");
+
+//   rows.forEach((row) => {
+//     const user_id = window.localStorage.getItem("userID");
+
+//     const code = row.cells[0].textContent;
+//     const description = row.cells[1].textContent;
+//     const solution = row.cells[2].textContent;
+//     const activity_Type = row.cells[3].textContent;
+//     const subsidiary = row.cells[4].textContent;
+//     const Complementary_desc = row.cells[5].textContent;
+//     const data1 = row.cells[6].querySelector("input")?.value || "";
+//     const data2 = row.cells[7].querySelector("input")?.value || "";
+//     const data3 = row.cells[8].querySelector("input")?.value || "";
+//     const data4 = row.cells[9].querySelector("input")?.value || "";
+//     const data5 = row.cells[10].querySelector("input")?.value || "";
+
+//     reportData.push({
+//       user_id,
+//       code,
+//       description,
+//       solution,
+//       activity_Type,
+//       subsidiary,
+//       Complementary_desc,
+//       data1,
+//       data2,
+//       data3,
+//       data4,
+//       data5,
+//     });
+//   });
+
+//   try {
+//     const response = await fetch("/save-report", {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify({
+//         year,
+//         month,
+//         reportData,
+//         weekno1,
+//         weekno2,
+//         weekno3,
+//         weekno4,
+//         weekno5,
+//       }),
+//     });
+//     const result = await response.json();
+//     if (result.success) {
+//       alert("Report saved successfully!");
+//     } else {
+//       console.error("Failed to save report:", result.message);
+//     }
+//   } catch (error) {
+//     console.error("Error saving report:", error);
+//   }
+// }
+
 async function saveReport() {
   const year = document.getElementById("year").value;
   const month = document.getElementById("month").value;
-  const weekno1 = document.getElementById("weekcell1").textContent;
-  const weekno2 = document.getElementById("weekcell2").textContent;
-  const weekno3 = document.getElementById("weekcell3").textContent;
-  const weekno4 = document.getElementById("weekcell4").textContent;
-  const weekno5 = document.getElementById("weekcell5").textContent;
 
   const table = document.getElementById("tab_logic");
   const reportData = [];
@@ -234,30 +301,39 @@ async function saveReport() {
     const user_id = window.localStorage.getItem("userID");
 
     const code = row.cells[0].textContent;
-    const description = row.cells[1].textContent;
-    const solution = row.cells[2].textContent;
-    const activity_Type = row.cells[3].textContent;
-    const subsidiary = row.cells[4].textContent;
-    const Complementary_desc = row.cells[5].textContent;
-    const data1 = row.cells[6].querySelector("input")?.value || "";
-    const data2 = row.cells[7].querySelector("input")?.value || "";
-    const data3 = row.cells[8].querySelector("input")?.value || "";
-    const data4 = row.cells[9].querySelector("input")?.value || "";
-    const data5 = row.cells[10].querySelector("input")?.value || "";
 
-    reportData.push({
-      user_id,
-      code,
-      description,
-      solution,
-      activity_Type,
-      subsidiary,
-      Complementary_desc,
-      data1,
-      data2,
-      data3,
-      data4,
-      data5,
+    const weeksData = [
+      {
+        weekno: document.getElementById("weekcell1").textContent,
+        data: row.cells[6].querySelector("input")?.value || null,
+      },
+      {
+        weekno: document.getElementById("weekcell2").textContent,
+        data: row.cells[7].querySelector("input")?.value || null,
+      },
+      {
+        weekno: document.getElementById("weekcell3").textContent,
+        data: row.cells[8].querySelector("input")?.value || null,
+      },
+      {
+        weekno: document.getElementById("weekcell4").textContent,
+        data: row.cells[9].querySelector("input")?.value || null,
+      },
+      {
+        weekno: document.getElementById("weekcell5").textContent,
+        data: row.cells[10].querySelector("input")?.value || null,
+      },
+    ];
+
+    weeksData.forEach((weekData) => {
+      reportData.push({
+        user_id,
+        code,
+        year,
+        month,
+        weekno: weekData.weekno,
+        data: weekData.data,
+      });
     });
   });
 
@@ -267,16 +343,7 @@ async function saveReport() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        year,
-        month,
-        reportData,
-        weekno1,
-        weekno2,
-        weekno3,
-        weekno4,
-        weekno5,
-      }),
+      body: JSON.stringify({ year, month, reportData }),
     });
     const result = await response.json();
     if (result.success) {
